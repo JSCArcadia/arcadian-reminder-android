@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.arcadia.wearapp.WearDescriptionActivity">
+    <item
+        android:id="@+id/menu_edit_button"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:orderInCategory="100"
+        android:title="@string/menu_edit_text"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_remove_button"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:orderInCategory="100"
+        android:title="@string/menu_edit_text"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_save_button"
+        android:icon="@drawable/ic_menu_save"
+        android:orderInCategory="102"
+        android:title="@string/menu_save_button"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+</menu>

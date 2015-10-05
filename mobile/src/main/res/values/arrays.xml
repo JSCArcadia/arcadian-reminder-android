@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="reminder_types_array">
+        <item>at event time</item>
+        <item>5 minutes before</item>
+        <item>30 minutes before</item>
+        <item>1 hour before</item>
+        <item>custom time:</item>
+    </array>
+    <string-array name="timezoneArray">
+        <item>GMT-12:00</item>
+        <item>GMT-11:00</item>
+        <item>GMT-10:00</item>
+        <item>GMT-09:00</item>
+        <item>GMT-08:00</item>
+        <item>GMT-07:00</item>
+        <item>GMT-06:00</item>
+        <item>GMT-05:00</item>
+        <item>GMT-04:30</item>
+        <item>GMT-04:00</item>
+        <item>GMT-03:30</item>
+        <item>GMT-03:00</item>
+        <item>GMT-02:30</item>
+        <item>GMT-02:00</item>
+        <item>GMT-01:00</item>
+        <item>GMT+00:00</item>
+        <item>GMT+01:00</item>
+        <item>GMT+02:00</item>
+        <item>GMT+03:00</item>
+        <item>GMT+04:00</item>
+        <item>GMT+04:30</item>
+        <item>GMT+05:00</item>
+        <item>GMT+05:30</item>
+        <item>GMT+06:00</item>
+        <item>GMT+06:30</item>
+        <item>GMT+07:00</item>
+        <item>GMT+08:00</item>
+        <item>GMT+09:00</item>
+        <item>GMT+09:30</item>
+        <item>GMT+10:00</item>
+        <item>GMT+11:00</item>
+        <item>GMT+12:00</item>
+    </string-array>
+    <string-array name="listPreferenceValues">
+        <item>GMT-12:00</item>
+        <item>GMT-11:00</item>
+        <item>GMT-10:00</item>
+        <item>GMT-09:00</item>
+        <item>GMT-08:00</item>
+        <item>GMT-07:00</item>
+        <item>GMT-06:00</item>
+        <item>GMT-05:00</item>
+        <item>GMT-04:30</item>
+        <item>GMT-04:00</item>
+        <item>GMT-03:30</item>
+        <item>GMT-03:00</item>
+        <item>GMT-02:30</item>
+        <item>GMT-02:00</item>
+        <item>GMT-01:00</item>
+        <item>GMT+00:00</item>
+        <item>GMT+01:00</item>
+        <item>GMT+02:00</item>
+        <item>GMT+03:00</item>
+        <item>GMT+04:00</item>
+        <item>GMT+04:30</item>
+        <item>GMT+05:00</item>
+        <item>GMT+05:30</item>
+        <item>GMT+06:00</item>
+        <item>GMT+06:30</item>
+        <item>GMT+07:00</item>
+        <item>GMT+08:00</item>
+        <item>GMT+09:00</item>
+        <item>GMT+09:30</item>
+        <item>GMT+10:00</item>
+        <item>GMT+11:00</item>
+        <item>GMT+12:00</item>
+    </string-array>
+    <string-array name="repeat_until_array">
+        <item>always</item>
+        <item>up to date</item>
+    </string-array>
+</resources>

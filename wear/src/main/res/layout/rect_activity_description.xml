@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_wear"
+    tools:context="com.arcadia.wearapp.WearDescriptionActivity"
+    tools:deviceIds="wear_square">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/name_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/blue_material"
+            android:gravity="center_horizontal"
+            android:paddingBottom="@dimen/padding_vertical"
+            android:paddingTop="@dimen/padding_vertical"
+            android:textColor="@color/primary_text_dark"
+            android:textSize="@dimen/text_size_primary_material" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/padding_vertical"
+            android:paddingTop="@dimen/padding_vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingEnd="@dimen/padding_horizontal"
+                android:paddingStart="@dimen/padding_horizontal"
+                android:src="@drawable/date"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/date_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/secondary_text_light"
+                android:textSize="@dimen/text_size_secondary_material" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/description_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:paddingBottom="@dimen/padding_vertical"
+            android:paddingTop="@dimen/padding_vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingEnd="@dimen/padding_horizontal"
+                android:paddingStart="@dimen/padding_horizontal"
+                android:src="@drawable/description"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/description_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/secondary_text_light"
+                android:textSize="@dimen/text_size_secondary_material" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/open_phone_button"
+            android:layout_width="wrap_content"
+            android:background="@drawable/card_background"
+            android:textColor="@color/blue_material"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingBottom="@dimen/padding_vertical"
+            android:layout_marginEnd="@dimen/padding_horizontal"
+            android:layout_marginStart="@dimen/padding_horizontal"
+            android:paddingTop="@dimen/padding_vertical"
+            android:text="@string/open_button_text"
+            android:textSize="@dimen/text_size_secondary_material" />
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="Timezone">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="locallyTimezone"
+            android:title="Use locally timezone" />
+        <ListPreference
+            android:defaultValue="GMT+03:00"
+            android:enabled="false"
+            android:entries="@array/timezoneArray"
+            android:entryValues="@array/timezoneArray"
+            android:key="timezoneList"
+            android:summary="GMT+03:00"
+            android:title="Set timezone" />
+    </PreferenceCategory>
+    <!--<PreferenceCategory android:title="Date Format">-->
+        <!--<SwitchPreference-->
+            <!--android:defaultValue="false"-->
+            <!--android:key="timeFormat"-->
+            <!--android:summary="01:00 PM"-->
+            <!--android:title="24h format" />-->
+    <!--</PreferenceCategory>-->
+    <PreferenceCategory android:title="Time Periods">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="timePeriod"
+            android:summary="Set the time interval between start and the end of 1 hour"
+            android:title="Automatic interval" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Versions">
+        <Preference
+            android:key="appVersion"
+            android:title="App version" />
+        <Preference
+            android:key="parseVersion"
+            android:title="Parse version" />
+        <Preference
+            android:key="realmVersion"
+            android:title="Realm Database version" />
+    </PreferenceCategory>
+</PreferenceScreen>

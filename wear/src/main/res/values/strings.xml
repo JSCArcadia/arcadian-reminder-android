@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">WearApp</string>
+    <string name="title_activity_description">DescriptionActivity</string>
+    <string name="description_stub">This is Description</string>
+    <string name="intent_event_id_key">event_id</string>
+    <string name="open_button_text">Open on phone</string>
+    <string name="text_noting_show">nothing to show</string>
+</resources>

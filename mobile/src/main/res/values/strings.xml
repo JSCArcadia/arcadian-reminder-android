@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Wear events notifier</string>
+    <string name="title_activity_description">Description</string>
+    <string name="intent_event_id_key">event_id</string>
+    <string name="intent_reminder_id_key">reminder_id</string>
+    <string name="search_hint">Search</string>
+    <string name="select_date_hint">Select Date</string>
+    <string name="select_time_hint">Select Time</string>
+    <string name="menu_save_button">Save</string>
+    <string name="intent_event_position_key">position</string>
+    <string name="intent_event_list_key">events_list_key</string>
+    <string name="name_hint">Name</string>
+    <string name="menu_edit_text">Edit Fields</string>
+    <string name="reminders_label_text">Reminders</string>
+    <string name="datepicker_tag">Datepickerdialog</string>
+    <string name="timepicker_tag">Timepickerdialog</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_save">Save</string>
+    <string name="title_activity_groups">Groups</string>
+    <string name="group_title">GROUP_TITLE_TAG</string>
+    <string name="group_description">GROUP_DESCRIPTION_TAG</string>
+    <string name="menu_import_calendar">Import from Calendar</string>
+    <string name="menu_choose_groups">Choose groups</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_show_local">Local</string>
+    <string name="menu_show_all">All</string>
+    <string name="CALENDAR_GROUP_ID">from_calendar_group_id</string>
+    <string name="menu_show_from_calendar">From Calendar</string>
+    <string name="repeat_rule_text">Repeat rule </string>
+
+    <string-array name="repeat_rules_array">
+        <item>not repeat</item>
+        <item>everyday</item>
+        <item>every week</item>
+        <item>every month</item>
+        <item>every year</item>
+    </string-array>
+</resources>

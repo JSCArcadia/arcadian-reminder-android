@@ -1,0 +1,45 @@
+<com.arcadia.wearapp.WearableListItemLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:gravity="center_vertical">
+
+    <android.support.wearable.view.CircledImageView
+        android:id="@+id/circle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginEnd="@dimen/padding_horizontal"
+        android:layout_marginStart="@dimen/padding_horizontal"
+        android:src="@drawable/calendar_time"
+        app:circle_color="@color/blue_material"
+        app:circle_radius="@dimen/radius_center_value"
+        app:circle_radius_pressed="@dimen/radius_pressed_value" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif-condensed-light"
+            android:gravity="center_vertical|start"
+            android:lineSpacingExtra="-4sp"
+            android:textColor="@color/primary_text_light"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/secondary_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif-condensed-light"
+            android:text="date"
+            android:gravity="center_vertical|start"
+            android:lineSpacingExtra="-4sp"
+            android:textColor="@color/secondary_text_light"
+            android:textSize="14sp" />
+    </LinearLayout>
+</com.arcadia.wearapp.WearableListItemLayout>

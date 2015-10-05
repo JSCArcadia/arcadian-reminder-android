@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="radius_pressed_value">20dp</dimen>
+    <dimen name="radius_noncenter_value">20dp</dimen>
+    <dimen name="radius_center_value">25dp</dimen>
+    <dimen name="text_size_primary_material">16sp</dimen>
+    <dimen name="text_size_secondary_material">14sp</dimen>
+    <dimen name="padding_horizontal">8dp</dimen>
+    <dimen name="padding_vertical">8dp</dimen>
+</resources>
