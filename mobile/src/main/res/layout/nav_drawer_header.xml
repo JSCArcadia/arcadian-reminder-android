@@ -7,13 +7,14 @@
     android:gravity="bottom"
     android:orientation="vertical"
     android:paddingBottom="8dp"
-    android:paddingEnd="12dp"
-    android:paddingStart="12dp"
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp"
     android:paddingTop="?android:attr/actionBarSize"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
-<TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="WEAR EVENTS"
-    android:textColor="@color/mdtp_white"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="WEAR EVENTS"
+        android:textColor="@color/mdtp_white" />
 </LinearLayout>
