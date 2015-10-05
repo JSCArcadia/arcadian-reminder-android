@@ -3,8 +3,8 @@
     android:layout_height="72dp"
     android:background="?android:attr/selectableItemBackground"
     android:orientation="vertical"
-    android:paddingEnd="@dimen/abc_list_item_padding_horizontal_material"
-    android:paddingStart="@dimen/abc_list_item_padding_horizontal_material">
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp">
 
     <ImageView
         android:layout_width="wrap_content"

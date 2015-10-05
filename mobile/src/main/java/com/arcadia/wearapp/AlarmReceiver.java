@@ -39,10 +39,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         this.context = context;
-
-        String longDatePattern = String.format("%s, %s", android.text.format.DateFormat.getBestDateTimePattern(Locale.getDefault(), "E MMM dd"), android.text.format.DateFormat.is24HourFormat(context) ? "H:mm" : "h:mm a");
-        this.dateFormat = new SimpleDateFormat(longDatePattern, Locale.getDefault());
-
+        this.dateFormat = (SimpleDateFormat) SimpleDateFormat.getDateInstance(java.text.DateFormat.DEFAULT, Locale.getDefault());
         showNotification(intent.getIntExtra("reminderId", 0));
 //        Intent service1 = new Intent(context, MyAlarmService.class);
 //        context.startService(service1);

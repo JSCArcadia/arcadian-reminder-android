@@ -1,8 +1,8 @@
 package com.arcadia.wearapp.adapters;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateFormat;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.arcadia.wearapp.R;
 import com.arcadia.wearapp.realm_objects.Event;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -239,10 +240,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     public void update() {
-        this.shortDateFormat = (SimpleDateFormat) DateFormat.getLongDateFormat(context);
-        String longDatePattern = String.format("%s, %s", DateFormat.getBestDateTimePattern(Locale.getDefault(), "E MMM dd"), DateFormat.is24HourFormat(context) ? "H:mm" : "h:mm a");
-        this.longDateFormat = new SimpleDateFormat(longDatePattern, Locale.getDefault());
-
+        this.shortDateFormat = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.FULL, Locale.getDefault());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            String longDatePattern = String.format("%s, %s", android.text.format.DateFormat.getBestDateTimePattern(Locale.getDefault(), "E MMM dd"), android.text.format.DateFormat.is24HourFormat(context) ? "H:mm" : "h:mm a");
+            this.longDateFormat = new SimpleDateFormat(longDatePattern, Locale.getDefault());
+        } else {
+            this.longDateFormat = (SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, Locale.getDefault());
+        }
         Realm realm = Realm.getInstance(context);
         RealmResults<Event> events = getEvents(realm);
 

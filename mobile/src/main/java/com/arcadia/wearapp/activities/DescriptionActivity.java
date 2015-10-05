@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
@@ -12,7 +13,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.format.DateFormat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +35,7 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -765,8 +766,14 @@ public class DescriptionActivity extends AppCompatActivity {
     }
 
     public void setDateTimeFormat() {
-        this.timeFormat = (SimpleDateFormat) DateFormat.getTimeFormat(this);
-        this.dateFormat = new SimpleDateFormat(DateFormat.getBestDateTimePattern(Locale.getDefault(), "E MMM dd"), Locale.getDefault());
+        this.timeFormat = (SimpleDateFormat) DateFormat.getTimeInstance(DateFormat.SHORT, Locale.getDefault());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            String skeleton = android.text.format.DateFormat.getBestDateTimePattern(Locale.getDefault(), "E MMM dd");
+            this.dateFormat = new SimpleDateFormat(skeleton, Locale.getDefault());
+        } else {
+            this.dateFormat = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
+        }
     }
 
     protected void showDatePicker(Calendar calendar, int type) {
@@ -848,7 +855,7 @@ public class DescriptionActivity extends AppCompatActivity {
         calendar.set(Calendar.SECOND, 0);
         TimePickerDialog tpd = null;
         boolean is24hFormat = false;
-        if (DateFormat.is24HourFormat(this))
+        if (android.text.format.DateFormat.is24HourFormat(this))
             is24hFormat = true;
         switch (type) {
             case datepicker_type_start:

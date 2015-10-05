@@ -1,6 +1,7 @@
 package com.arcadia.wearapp;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -48,27 +49,31 @@ public class MobileListenerService extends WearableListenerService {
     @Override
     public void onCreate() {
         super.onCreate();
-        googleClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-                    @Override
-                    public void onConnected(Bundle connectionHint) {
-                        Log.d(this.toString(), "onConnected: " + connectionHint);
-                    }
 
-                    @Override
-                    public void onConnectionSuspended(int cause) {
-                        Log.d(this.toString(), "onConnectionSuspended: " + cause);
-                    }
-                })
-                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
-                    @Override
-                    public void onConnectionFailed(ConnectionResult result) {
-                        Log.d(this.toString(), "onConnectionFailed: " + result);
-                    }
-                })
-                .addApi(Wearable.API)
-                .build();
-        googleClient.connect();
+        //for connect to Android Wear device, android version must be 4.3 or higher
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            googleClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                        @Override
+                        public void onConnected(Bundle connectionHint) {
+                            Log.d(this.toString(), "onConnected: " + connectionHint);
+                        }
+
+                        @Override
+                        public void onConnectionSuspended(int cause) {
+                            Log.d(this.toString(), "onConnectionSuspended: " + cause);
+                        }
+                    })
+                    .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                        @Override
+                        public void onConnectionFailed(ConnectionResult result) {
+                            Log.d(this.toString(), "onConnectionFailed: " + result);
+                        }
+                    })
+                    .addApi(Wearable.API)
+                    .build();
+            googleClient.connect();
+        }
     }
 
     @Override
@@ -85,7 +90,7 @@ public class MobileListenerService extends WearableListenerService {
             final String action = intent.getAction();
             switch (action) {
                 case Action_Send_List:
-                    if (googleClient.isConnected()) {
+                    if (googleClient!=null && googleClient.isConnected()) {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {

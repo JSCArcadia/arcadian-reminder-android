@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        if (getIntent().getAction().equals(MobileListenerService.Action_Open_Event)) {
+        if (MobileListenerService.Action_Open_Event.equals(getIntent().getAction())) {
             if (getIntent().getExtras().containsKey(getString(R.string.intent_event_id_key))) {
                 Intent openIntent = new Intent(MainActivity.this, DescriptionActivity.class);
                 openIntent.putExtra(getString(R.string.intent_event_id_key), getIntent().getExtras().getInt(getString(R.string.intent_event_id_key)));

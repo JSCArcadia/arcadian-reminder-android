@@ -8,10 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingEnd="@dimen/activity_horizontal_margin"
-        android:paddingStart="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin">
+        android:padding="@dimen/activity_horizontal_margin">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -33,7 +30,7 @@
                 android:id="@+id/clear_name_text_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:background="@color/background_material_light"
                 android:paddingEnd="@dimen/abc_button_padding_horizontal_material"
@@ -47,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:labelFor="@+id/start_date_layout"
-            android:paddingTop="@dimen/abc_item_padding_vertical_material"
+            android:paddingTop="@dimen/abc_item_padding_material"
             android:text="Start"
             android:textColor="@color/abc_secondary_text_material_light"
             android:textSize="@dimen/text_size_secondary_material" />
@@ -88,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:labelFor="@+id/end_date_layout"
-            android:paddingTop="@dimen/abc_item_padding_vertical_material"
+            android:paddingTop="@dimen/abc_item_padding_material"
             android:text="End"
             android:textColor="@color/abc_secondary_text_material_light"
             android:textSize="@dimen/text_size_secondary_material" />
@@ -146,7 +143,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:labelFor="@+id/repeat_spinner"
-                android:paddingTop="@dimen/abc_item_padding_vertical_material"
+                android:paddingTop="@dimen/abc_item_padding_material"
                 android:text="@string/repeat_rule_text"
                 android:textColor="@color/abc_secondary_text_material_light"
                 android:textSize="@dimen/text_size_secondary_material" />
@@ -177,7 +174,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:labelFor="@+id/repeat_until_spinner"
-                    android:paddingTop="@dimen/abc_item_padding_vertical_material"
+                    android:paddingTop="@dimen/abc_item_padding_material"
                     android:text="Until"
                     android:textColor="@color/abc_secondary_text_material_light"
                     android:textSize="@dimen/text_size_secondary_material" />
@@ -228,7 +225,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:labelFor="@+id/spinner_layout"
-                android:paddingTop="@dimen/abc_item_padding_vertical_material"
+                android:paddingTop="@dimen/abc_item_padding_material"
                 android:text="@string/reminders_label_text"
                 android:textColor="@color/abc_secondary_text_material_light"
                 android:textSize="@dimen/text_size_secondary_material" />
