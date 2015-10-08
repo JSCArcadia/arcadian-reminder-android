@@ -13,19 +13,20 @@ import android.widget.TextView;
 
 import com.arcadia.wearapp.R;
 import com.arcadia.wearapp.realm_objects.Event;
+import com.arcadia.wearapp.realm_objects.RepeatRule;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import io.realm.Realm;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
 
@@ -40,6 +41,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private View.OnClickListener onClickListener;
     private View.OnLongClickListener onLongClickListener;
     private SparseArray<Section> mSections = new SparseArray<>();
+    private List<Event> events = new ArrayList<>();
+    private List<Event> allDataSet = new ArrayList<>();
+    private Comparator<Event> comparator = new Comparator<Event>() {
+        @Override
+        public int compare(Event lEvent, Event rEvent) {
+            Date event1 = lEvent.getStartDate();
+            Date event2 = rEvent.getStartDate();
+            if (event1.after(event2))
+                return 1;
+            else
+                return event1.equals(event2) ? 0 : -1;
+        }
+    };
 
     public RecyclerViewAdapter(Context context) {
         this.context = context;
@@ -74,19 +88,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ItemViewHolder) {
-            Realm realm = Realm.getInstance(context);
 
-            RealmResults<Event> events = getEvents(realm);
+//            RealmResults<Event> events = getEvents(realm);
             Event event = events.get(sectionedPositionToPosition(position));
 
             ItemViewHolder viewHolder = (ItemViewHolder) holder;
+//            Realm realm = Realm.getInstance(context);
             viewHolder.nameTV.setText(event.getTitle());
             if (event.getStartDate() != null) {
                 viewHolder.dateTV.setText(longDateFormat.format(event.getStartDate()));
                 if (event.getEndDate().after(event.getStartDate()))
                     viewHolder.dateTV.append(String.format(" - %s", longDateFormat.format(event.getEndDate())));
             }
-            realm.close();
+//            realm.close();
             //cast holder to VHItem and set data
         } else if (holder instanceof HeaderViewHolder) {
             HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
@@ -106,7 +120,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public void deleteItem(int index) {
         Realm realm = Realm.getInstance(context);
-        RealmResults events = getEvents(realm);
+        this.events = getEvents();
         realm.beginTransaction();
         events.remove(index);
         realm.commitTransaction();
@@ -115,17 +129,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     public Event getItem(int position) {
-        Realm realm = Realm.getInstance(context);
-        Event event = getEvents(realm).get(sectionedPositionToPosition(position));
-        realm.close();
+//        Realm realm = Realm.getInstance(context);
+        Event event = getEvents().get(sectionedPositionToPosition(position));
+//        realm.close();
         return event;
     }
 
     @Override
     public int getItemCount() {
-        Realm realm = Realm.getInstance(context);
-        int count = getEvents(realm).size();
-        realm.close();
+//        Realm realm = Realm.getInstance(context);
+        int count = events.size();//getEvents(realm).size();
+//        realm.close();
         if (count > 0) {
             return count + mSections.size();
         } else
@@ -217,27 +231,27 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         notifyDataSetChanged();
     }
 
-    public void addSection(int eventID) {
-        Realm realm = Realm.getInstance(context);
-        RealmResults<Event> events = getEvents(realm);
-        events.sort("startDate");
-        Event event = realm.where(Event.class).equalTo("eventID", eventID).findFirst();
-        if (event != null && events.size() > 0) {
-            int position = events.lastIndexOf(event);
-            String title = shortDateFormat.format(event.getStartDate());
-            realm.close();
-
-            Section section = new Section(position, title);
-            Section[] tempList = new Section[mSections.size() + 1];
-
-            for (int i = 0; i < mSections.size(); i++) {
-                tempList[i] = mSections.valueAt(i);
-            }
-            tempList[tempList.length - 1] = section;
-
-            setSections(tempList);
-        }
-    }
+//    public void addSection(int eventID) {
+//        Realm realm = Realm.getInstance(context);
+//        this.events = getEvents();
+//        //events.sort("startDate");
+//        Event event = realm.where(Event.class).equalTo("eventID", eventID).findFirst();
+//        if (event != null && events.size() > 0) {
+//            int position = events.lastIndexOf(event);
+//            String title = shortDateFormat.format(event.getStartDate());
+//            realm.close();
+//
+//            Section section = new Section(position, title);
+//            Section[] tempList = new Section[mSections.size() + 1];
+//
+//            for (int i = 0; i < mSections.size(); i++) {
+//                tempList[i] = mSections.valueAt(i);
+//            }
+//            tempList[tempList.length - 1] = section;
+//
+//            setSections(tempList);
+//        }
+//    }
 
     public void update() {
         this.shortDateFormat = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.FULL, Locale.getDefault());
@@ -247,8 +261,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         } else {
             this.longDateFormat = (SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, Locale.getDefault());
         }
-        Realm realm = Realm.getInstance(context);
-        RealmResults<Event> events = getEvents(realm);
+//        Realm realm = Realm.getInstance(context);
+        allDataSet = getAllDataSet();
+        this.events = getEvents();
 
         List<Section> tempSections = new ArrayList<>();
 
@@ -265,9 +280,41 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (!have)
                 tempSections.add(new Section(i, shortDateFormat.format(calendar.getTime())));
         }
-        realm.close();
+//        realm.close();
         Section[] dummy = new Section[tempSections.size()];
         setSections(tempSections.toArray(dummy));
+    }
+
+    private List<Event> getAllDataSet() {
+        List<Event> dataSet = new ArrayList<>();
+        Realm realm = Realm.getInstance(context);
+
+//        dataSet.addAll(realm.allObjects(Event.class));
+        for (Event event : realm.allObjectsSorted(Event.class, "startDate", true)) {
+            dataSet.add(new Event(event.getEventID(), event.getTitle(), event.getStartDate(), event.getEndDate(), event.getDescription(), event.getGroupID()));
+            RepeatRule rule = realm.where(RepeatRule.class).equalTo("eventID", event.getEventID()).findFirst();
+            if (rule != null) {
+                if (rule.getRepeatPeriod() != 0) {
+                    long nextStartDate = event.getStartDate().getTime();
+                    long nextEndDate = event.getEndDate().getTime();
+                    Date maxRepeatDate = new Date(rule.getEndRepeatDate().getTime());
+                    long repeats = 0;
+                    if (rule.getEndRepeatDate().after(realm.where(Event.class).maximumDate("startDate"))) {
+                        maxRepeatDate.setTime(realm.where(Event.class).maximumDate("startDate").getTime());
+                        repeats++;
+                    }
+                    repeats += ((maxRepeatDate.getTime() - event.getStartDate().getTime()) / rule.getRepeatPeriod());
+                    if (repeats > 100) repeats = 100;
+                    for (int i = 0; i < repeats; i++) {
+                        nextStartDate += rule.getRepeatPeriod();
+                        nextEndDate += rule.getRepeatPeriod();
+                        dataSet.add(new Event(event.getEventID(), event.getTitle(), new Date(nextStartDate), new Date(nextEndDate), event.getDescription(), event.getGroupID()));
+                    }
+                }
+            }
+        }
+        realm.close();
+        return dataSet;
     }
 
 //    private int sectionsBefore(int position) {
@@ -280,22 +327,33 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 //        return count > 0 ? count : 0;
 //    }
 
-    private RealmResults<Event> getEvents(Realm realm) {
-        RealmResults<Event> results = realm.where(Event.class).findAll();
-        RealmQuery<Event> query = realm.where(Event.class);
-
-        query.beginGroup();
-        query.contains("title", filter, false);
-        for (Event event : results) {
-            if (event.getTitle().toLowerCase().contains(filter.toLowerCase())) {
-                query.or().equalTo("eventID", event.getEventID());
-            }
+    private List<Event> getEvents() {
+//        RealmResults<Event> results = realm.where(Event.class).findAll();
+//        RealmQuery<Event> query = realm.where(Event.class);
+//
+//        query.beginGroup();
+//        query.contains("title", filter, false);
+//        for (Event event : results) {
+//            if (event.getTitle().toLowerCase().contains(filter.toLowerCase())) {
+//                query.or().equalTo("eventID", event.getEventID());
+//            }
+//        }
+//        query.endGroup();
+//
+//        if (groupID != null)
+//            query = query.equalTo("groupID", groupID);
+//        return query.findAllSorted("startDate");
+        this.events = new ArrayList<>();
+//        Realm realm = Realm.getInstance(context);
+        for (Event event : allDataSet) {
+            if (event.getTitle().toLowerCase().contains(filter.toLowerCase()))
+                if (groupID == null || event.getGroupID().equals(groupID))
+                    events.add(event);
         }
-        query.endGroup();
-
-        if (groupID != null)
-            query = query.equalTo("groupID", groupID);
-        return query.findAllSorted("startDate");
+        if (!events.isEmpty())
+            Collections.sort(events, comparator);
+//        realm.close();
+        return events;
     }
 
     public void setGroupID(String groupID) {

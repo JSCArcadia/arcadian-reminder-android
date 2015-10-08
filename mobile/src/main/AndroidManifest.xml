@@ -39,7 +39,7 @@
         <!--<service android:name=".alarm_sevices.NotifyService" />-->
 
         <receiver
-            android:name=".AlarmReceiver"
+            android:name=".adapters.AlarmReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="com.arcadia.wearapp.broadcast" />

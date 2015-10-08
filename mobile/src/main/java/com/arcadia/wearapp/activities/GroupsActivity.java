@@ -6,13 +6,15 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
+import android.widget.TextView;
 
-import com.arcadia.wearapp.adapters.GroupsAdapter;
 import com.arcadia.wearapp.MobileApp;
-import com.arcadia.wearapp.realm_objects.ParseGroup;
 import com.arcadia.wearapp.R;
+import com.arcadia.wearapp.adapters.GroupsAdapter;
+import com.arcadia.wearapp.realm_objects.ParseGroup;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -21,7 +23,8 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
     public static final String Description = "description";
     public static final String Title = "title";
     private MobileApp app;
-    private ListView listView;
+    private ListView groupsListView;
+    private TextView textView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private GroupsAdapter adapter;
@@ -39,22 +42,24 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
 
         app = (MobileApp) getApplication();
 
-        listView = (ListView) findViewById(R.id.groups_list);
-//        listView.setOnItemClickListener(onClickListener);
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+        groupsListView = (ListView) findViewById(R.id.groups_list);
+//        groupsListView.setOnItemClickListener(onClickListener);
+        groupsListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                int topRowVerticalPosition = (listView == null || listView.getChildCount() == 0) ?
-                        0 : listView.getChildAt(0).getTop();
+                int topRowVerticalPosition = (groupsListView == null || groupsListView.getChildCount() == 0) ?
+                        0 : groupsListView.getChildAt(0).getTop();
                 mSwipeRefreshLayout.setEnabled(firstVisibleItem == 0 && topRowVerticalPosition >= 0);
             }
         });
 
-        if (app!=null)
+        textView = (TextView) findViewById(R.id.groups_nothing_show_text);
+
+        if (app != null)
             app.getFromParse();
     }
 
@@ -123,7 +128,12 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
         RealmResults<ParseGroup> resultList = realm.allObjectsSorted(ParseGroup.class, "title", true);
         realm.close();
         adapter = new GroupsAdapter(this, resultList);
-        listView.setAdapter(adapter);
+        groupsListView.setAdapter(adapter);
+
+        if (resultList.isEmpty())
+            textView.setVisibility(View.VISIBLE);
+        else
+            textView.setVisibility(View.GONE);
     }
 
     @Override
@@ -133,7 +143,7 @@ public class GroupsActivity extends AppCompatActivity implements SwipeRefreshLay
             @Override
             public void run() {
 //                prepareToUpdate();
-                if (app != null)
+                if (app != null && isOnline())
                     app.getFromParse();
                 dataChange();
                 mSwipeRefreshLayout.setRefreshing(false);

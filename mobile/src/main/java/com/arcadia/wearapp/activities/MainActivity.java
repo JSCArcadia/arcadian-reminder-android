@@ -27,7 +27,10 @@ import com.arcadia.wearapp.realm_objects.ParseGroup;
 import com.arcadia.wearapp.realm_objects.Reminder;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import io.realm.Realm;
@@ -91,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         CalendarContentResolver resolver = new CalendarContentResolver(MainActivity.this);
                         Set<Event> events = resolver.getCalendarEvents();
                         if (events.isEmpty()) {
-                            Toast.makeText(MainActivity.this, "You do not have events at the calendar", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "You do not have events at the calendar", Toast.LENGTH_LONG).show();
                         } else {
                             for (Event event : events) {
                                 event.setGroupID(getString(R.string.CALENDAR_GROUP_ID));
@@ -131,10 +134,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             invalidateOptionsMenu();
 
                             if (importCount > 0) {
-                                Toast.makeText(MainActivity.this, String.format("Successfully added %d events", importCount), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this, String.format("Successfully added %d events", importCount), Toast.LENGTH_LONG).show();
                                 adapter.update();
                             } else
-                                Toast.makeText(MainActivity.this, "Not found any new events", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this, "Not found any new events", Toast.LENGTH_LONG).show();
                         }
                         break;
                     default:
@@ -158,7 +161,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         LinearLayoutManager manager = new LinearLayoutManager(this);
-
 
         adapter = new RecyclerViewAdapter(this);
         adapter.setOnClickListener(this);
@@ -244,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(Calendar.SECOND, 0);
-                calendar.add(Calendar.DAY_OF_YEAR, 7 - i);
+                calendar.add(Calendar.DAY_OF_YEAR, i);
                 event.setStartDate(calendar.getTime());
                 event.setEndDate(calendar.getTime());
 
@@ -325,8 +327,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onLongClick(View v) {
-//        int position = recyclerView.getChildLayoutPosition(v);
-        Toast.makeText(MainActivity.this, "Open event description", Toast.LENGTH_SHORT).show();
+        int position = recyclerView.getChildLayoutPosition(v);
+        Realm realm = Realm.getInstance(this);
+        Event event = adapter.getItem(position);
+        if (!event.getDescription().equals(""))
+            Toast.makeText(MainActivity.this, event.getDescription(), Toast.LENGTH_SHORT).show();
         return true;
     }
 

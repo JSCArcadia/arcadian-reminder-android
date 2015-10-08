@@ -1,4 +1,4 @@
-package com.arcadia.wearapp;
+package com.arcadia.wearapp.adapters;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -11,6 +11,8 @@ import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
+import com.arcadia.wearapp.MobileListenerService;
+import com.arcadia.wearapp.R;
 import com.arcadia.wearapp.activities.MainActivity;
 import com.arcadia.wearapp.realm_objects.Event;
 import com.arcadia.wearapp.realm_objects.Reminder;

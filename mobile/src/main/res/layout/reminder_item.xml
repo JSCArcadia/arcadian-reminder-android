@@ -20,9 +20,8 @@
         <ImageButton
             android:id="@+id/delete_spinner_button"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:adjustViewBounds="true"
-            android:background="@color/background_material_light"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
             android:padding="@dimen/abc_button_padding_horizontal_material"
             android:scaleType="centerInside"
             android:src="@android:drawable/ic_menu_close_clear_cancel"

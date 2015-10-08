@@ -555,41 +555,23 @@ public class DescriptionActivity extends AppCompatActivity {
 
     private void setRepeatRule(int type) {
         repeatUntilLayout.setVisibility(View.VISIBLE);
+        Calendar nextStartDate = Calendar.getInstance();
+        nextStartDate.setTime(startDate.getTime());
         switch (type) {
             case 1:
-                repeatTimeMillis = AlarmManager.INTERVAL_DAY;
+                nextStartDate.add(Calendar.DAY_OF_MONTH, 1);
                 break;
             case 2:
-                repeatTimeMillis = AlarmManager.INTERVAL_DAY * 7;
+                nextStartDate.add(Calendar.DAY_OF_MONTH, 7);
                 break;
             case 3:
-                int currentMonth = startDate.get(Calendar.MONTH);
-                if (currentMonth == Calendar.JANUARY || currentMonth == Calendar.MARCH || currentMonth == Calendar.MAY || currentMonth == Calendar.JULY
-                        || currentMonth == Calendar.AUGUST || currentMonth == Calendar.OCTOBER || currentMonth == Calendar.DECEMBER) {
-                    repeatTimeMillis = AlarmManager.INTERVAL_DAY * 31;
-                } else if (currentMonth == Calendar.APRIL || currentMonth == Calendar.JUNE || currentMonth == Calendar.SEPTEMBER
-                        || currentMonth == Calendar.NOVEMBER) {
-                    repeatTimeMillis = AlarmManager.INTERVAL_DAY * 30;
-                } else if (currentMonth == Calendar.FEBRUARY) {
-                    if (startDate.get(Calendar.YEAR) % 4 == 0) {
-                        repeatTimeMillis = AlarmManager.INTERVAL_DAY * 29;
-                    } else {
-                        repeatTimeMillis = AlarmManager.INTERVAL_DAY * 28;
-                    }
-                }
+                nextStartDate.add(Calendar.MONTH, 1);
                 break;
             case 4:
-                if (startDate.get(Calendar.YEAR) % 4 == 0) {
-                    repeatTimeMillis = AlarmManager.INTERVAL_DAY * 366;
-                } else {
-                    repeatTimeMillis = AlarmManager.INTERVAL_DAY * 365;
-                }
-                break;
-            default:
-                repeatUntilLayout.setVisibility(View.GONE);
-                repeatTimeMillis = 0;
+                nextStartDate.add(Calendar.YEAR, 1);
                 break;
         }
+        repeatTimeMillis = nextStartDate.getTimeInMillis() - startDate.getTimeInMillis();
     }
 
     private void saveAndExit() {
