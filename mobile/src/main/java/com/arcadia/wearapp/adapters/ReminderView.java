@@ -35,7 +35,6 @@ public class ReminderView {
     private Spinner spinner;
     private LinearLayout customDateLayout;
     private Reminder reminder;
-    private int spinnerWight;
     private boolean editMode = false;
     private LinearLayout reminderItem;
     View.OnClickListener deleteClickListener = new View.OnClickListener() {
@@ -98,11 +97,10 @@ public class ReminderView {
     }
 
     private void craftView() {
-        ArrayAdapter<CharSequence> remindSpinnerAdapter = ArrayAdapter.createFromResource(context, R.array.reminder_types_array, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> remindSpinnerAdapter = ArrayAdapter.createFromResource(context, R.array.reminder_types_array, R.layout.spinner_item);
         remindSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
+        spinner.setBackgroundResource(R.drawable.custom_spinner_drawable);
         spinner.setAdapter(remindSpinnerAdapter);
-        spinnerWight = spinner.getDropDownWidth();
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -187,8 +185,7 @@ public class ReminderView {
     public void setEditMode(boolean mode) {
         this.editMode = mode;
         if (editMode) {
-            spinner.setDropDownWidth(spinnerWight);
-
+            dateTextView.setEnabled(true);
             dateTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -207,6 +204,7 @@ public class ReminderView {
                     showDatePicker();
                 }
             });
+            timeTextView.setEnabled(true);
             timeTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -228,11 +226,11 @@ public class ReminderView {
             });
             deleteButton.setVisibility(View.VISIBLE);
             deleteButton.setOnClickListener(deleteClickListener);
-            spinner.setDropDownWidth(spinnerWight);
+            spinner.setEnabled(true);
             deleteButton.setVisibility(View.VISIBLE);
             deleteButton.setOnClickListener(deleteClickListener);
         } else {
-            spinner.setDropDownWidth(0);
+            spinner.setEnabled(false);
             deleteButton.setVisibility(View.GONE);
         }
     }

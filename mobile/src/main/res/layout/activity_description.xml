@@ -16,14 +16,13 @@
 
             <EditText
                 android:id="@+id/name_text"
-                style="@style/Base.Widget.AppCompat.EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:cursorVisible="false"
-                android:focusable="false"
-                android:focusableInTouchMode="false"
+                android:background="@drawable/custom_edittext_drawable"
+                android:enabled="false"
                 android:hint="@string/name_hint"
+                android:textColor="@color/custom_text_color"
                 android:textSize="@dimen/abc_text_size_large_material" />
 
             <ImageButton
@@ -45,7 +44,7 @@
             android:layout_height="wrap_content"
             android:labelFor="@+id/start_date_layout"
             android:paddingTop="@dimen/abc_item_padding_material"
-            android:text="Start"
+            android:text="@string/start_date_label_text"
             android:textColor="@color/abc_secondary_text_material_light"
             android:textSize="@dimen/text_size_secondary_material" />
 
@@ -56,19 +55,23 @@
 
             <TextView
                 android:id="@+id/start_date"
-                style="@style/Widget.AppCompat.Spinner.Underlined"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:hint="@string/select_date_hint" />
+                android:background="@drawable/custom_spinner_drawable"
+                android:enabled="false"
+                android:hint="@string/select_date_hint"
+                android:textColor="@color/custom_text_color" />
 
             <TextView
                 android:id="@+id/start_time"
-                style="@style/Widget.AppCompat.Spinner.Underlined"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:hint="@string/select_time_hint" />
+                android:background="@drawable/custom_spinner_drawable"
+                android:enabled="false"
+                android:hint="@string/select_time_hint"
+                android:textColor="@color/custom_text_color" />
 
             <ImageButton
                 android:id="@+id/clear_start_date_button"
@@ -86,7 +89,7 @@
             android:layout_height="wrap_content"
             android:labelFor="@+id/end_date_layout"
             android:paddingTop="@dimen/abc_item_padding_material"
-            android:text="End"
+            android:text="@string/end_date_label_text"
             android:textColor="@color/abc_secondary_text_material_light"
             android:textSize="@dimen/text_size_secondary_material" />
 
@@ -98,19 +101,23 @@
 
             <TextView
                 android:id="@+id/end_date"
-                style="@style/Widget.AppCompat.Spinner.Underlined"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:hint="@string/select_date_hint" />
+                android:background="@drawable/custom_spinner_drawable"
+                android:enabled="false"
+                android:hint="@string/select_date_hint"
+                android:textColor="@color/custom_text_color" />
 
             <TextView
                 android:id="@+id/end_time"
-                style="@style/Widget.AppCompat.Spinner.Underlined"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:hint="@string/select_time_hint" />
+                android:background="@drawable/custom_spinner_drawable"
+                android:enabled="false"
+                android:hint="@string/select_time_hint"
+                android:textColor="@color/custom_text_color" />
 
             <ImageButton
                 android:id="@+id/clear_end_date_button"
@@ -125,13 +132,13 @@
 
         <EditText
             android:id="@+id/description_text"
-            style="@style/Base.Widget.AppCompat.EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/custom_edittext_drawable"
             android:cursorVisible="false"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:hint="Description"
+            android:enabled="false"
+            android:hint="@string/description_hint_text"
+            android:textColor="@color/custom_text_color"
             android:textSize="@dimen/text_size_primary_material" />
 
         <LinearLayout
@@ -149,13 +156,11 @@
                 android:textSize="@dimen/text_size_secondary_material" />
 
             <Spinner
+                style="@android:style/Widget.Holo.Light.Spinner"
                 android:id="@+id/repeat_spinner"
-                style="@style/Widget.AppCompat.Spinner.Underlined"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:focusable="false"
-                android:focusableInTouchMode="false" />
-
+                android:enabled="false" />
         </LinearLayout>
 
         <LinearLayout
@@ -175,17 +180,16 @@
                     android:layout_height="wrap_content"
                     android:labelFor="@+id/repeat_until_spinner"
                     android:paddingTop="@dimen/abc_item_padding_material"
-                    android:text="Until"
+                    android:text="@string/until_label_text"
                     android:textColor="@color/abc_secondary_text_material_light"
                     android:textSize="@dimen/text_size_secondary_material" />
 
                 <Spinner
+                    style="@android:style/Widget.Holo.Light.Spinner"
                     android:id="@+id/repeat_until_spinner"
-                    style="@style/Widget.AppCompat.Spinner.Underlined"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false" />
+                    android:enabled="false" />
             </LinearLayout>
 
             <LinearLayout
@@ -197,19 +201,23 @@
 
                 <TextView
                     android:id="@+id/repeat_until_date"
-                    style="@style/Widget.AppCompat.Spinner.Underlined"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:hint="@string/select_date_hint" />
+                    android:background="@drawable/custom_spinner_drawable"
+                    android:enabled="false"
+                    android:hint="@string/select_date_hint"
+                    android:textColor="@color/custom_text_color" />
 
                 <TextView
                     android:id="@+id/repeat_until_time"
-                    style="@style/Widget.AppCompat.Spinner.Underlined"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:hint="@string/select_time_hint" />
+                    android:background="@drawable/custom_spinner_drawable"
+                    android:enabled="false"
+                    android:hint="@string/select_time_hint"
+                    android:textColor="@color/custom_text_color" />
             </LinearLayout>
         </LinearLayout>
 

@@ -55,7 +55,7 @@ public class DescriptionActivity extends AppCompatActivity {
     public Calendar startDate = Calendar.getInstance();
     public SimpleDateFormat timeFormat;
     public SimpleDateFormat dateFormat;
-    LinearLayout remindersLayout;
+    private LinearLayout remindersLayout;
     private Calendar endDate = Calendar.getInstance();
     private Calendar repeatDate = Calendar.getInstance();
     private boolean editMode;
@@ -72,8 +72,6 @@ public class DescriptionActivity extends AppCompatActivity {
     private ImageButton clearEndDateButton;
     private ImageButton clearNameButton;
     private TextView remindersLabel;
-    private int spinnerWight;
-    private int repeatSpinnerWight;
     private TextView endDateTV;
     private TextView startTimeTV;
     private TextView repeatDateTextView;
@@ -217,43 +215,22 @@ public class DescriptionActivity extends AppCompatActivity {
         remindersLabel = (TextView) findViewById(R.id.reminders_text_label);
 
         repeatSpinner = (Spinner) findViewById(R.id.repeat_spinner);
-        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.repeat_rules_array, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.repeat_rules_array, R.layout.spinner_item);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         repeatSpinner.setAdapter(spinnerAdapter);
-        spinnerWight = repeatSpinner.getDropDownWidth();
-        if (!editMode) {
-            repeatSpinner.setDropDownWidth(0);
-        }
 
         repeatUntilLayout = (LinearLayout) findViewById(R.id.repeat_until_layout);
         repeatDateLayout = (LinearLayout) findViewById(R.id.repeat_until_date_layout);
 
         repeatUntilSpinner = (Spinner) findViewById(R.id.repeat_until_spinner);
-        ArrayAdapter<CharSequence> untilSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.repeat_until_array, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> untilSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.repeat_until_array, R.layout.spinner_item);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         repeatUntilSpinner.setAdapter(untilSpinnerAdapter);
-        repeatUntilSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                setChanged(true);
-                if (position == 1) {
-                    repeatDateLayout.setVisibility(View.VISIBLE);
-                } else {
-                    repeatDateLayout.setVisibility(View.GONE);
-                    repeatDate = null;
-                    repeatDateTextView.setText("");
-                    repeatTimeTextView.setText("");
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        repeatSpinnerWight = repeatUntilSpinner.getDropDownWidth();
         if (!editMode) {
-            repeatUntilSpinner.setDropDownWidth(0);
+            repeatSpinner.setEnabled(false);
+            repeatSpinner.setBackgroundResource(R.drawable.custom_spinner_drawable);
+            repeatUntilSpinner.setEnabled(false);
+            repeatUntilSpinner.setBackgroundResource(R.drawable.custom_spinner_drawable);
         }
 
         repeatDateTextView = (TextView) findViewById(R.id.repeat_until_date);
@@ -391,9 +368,7 @@ public class DescriptionActivity extends AppCompatActivity {
     private void allowEditMode() {
         editMode = true;
 
-        nameEditText.setFocusableInTouchMode(true);
-        nameEditText.setFocusable(true);
-        nameEditText.setCursorVisible(true);
+        nameEditText.setEnabled(true);
         nameEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -421,12 +396,14 @@ public class DescriptionActivity extends AppCompatActivity {
         if (!nameEditText.getText().toString().isEmpty())
             clearNameButton.setVisibility(View.VISIBLE);
 
+        startDateTV.setEnabled(true);
         startDateTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showDatePicker(startDate, datepicker_type_start);
             }
         });
+        startTimeTV.setEnabled(true);
         startTimeTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -450,12 +427,14 @@ public class DescriptionActivity extends AppCompatActivity {
         if (!startDateTV.getText().toString().isEmpty())
             clearStartDateButton.setVisibility(View.VISIBLE);
 
+        endDateTV.setEnabled(true);
         endDateTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showDatePicker(endDate, datepicker_type_end);
             }
         });
+        endTimeTV.setEnabled(true);
         endTimeTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -482,8 +461,7 @@ public class DescriptionActivity extends AppCompatActivity {
         if (!endDateTV.getText().toString().isEmpty())
             clearEndDateButton.setVisibility(View.VISIBLE);
 
-        descriptionEditText.setFocusableInTouchMode(true);
-        descriptionEditText.setFocusable(true);
+        descriptionEditText.setEnabled(true);
         descriptionEditText.setCursorVisible(true);
         descriptionEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -500,8 +478,7 @@ public class DescriptionActivity extends AppCompatActivity {
             }
         });
 
-        repeatSpinner.setFocusable(true);
-        repeatSpinner.setDropDownWidth(spinnerWight);
+        repeatSpinner.setEnabled(true);
         repeatSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -514,9 +491,28 @@ public class DescriptionActivity extends AppCompatActivity {
             }
         });
 
-        repeatUntilSpinner.setFocusable(true);
-        repeatUntilSpinner.setDropDownWidth(repeatSpinnerWight);
+        repeatUntilSpinner.setEnabled(true);
+        repeatUntilSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                setChanged(true);
+                if (position == 1) {
+                    repeatDateLayout.setVisibility(View.VISIBLE);
+                } else {
+                    repeatDateLayout.setVisibility(View.GONE);
+                    repeatDate = null;
+                    repeatDateTextView.setText("");
+                    repeatTimeTextView.setText("");
+                }
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        repeatDateTextView.setEnabled(true);
         repeatDateTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -526,6 +522,7 @@ public class DescriptionActivity extends AppCompatActivity {
                     showDatePicker(startDate, datepicker_type_repeat);
             }
         });
+        repeatTimeTextView.setEnabled(true);
         repeatTimeTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

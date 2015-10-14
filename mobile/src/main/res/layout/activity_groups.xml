@@ -20,7 +20,7 @@
             <TextView
                 android:id="@+id/groups_nothing_show_text"
                 android:visibility="gone"
-                android:text="Nothing to show. Swipe to refresh"
+                android:text="@string/no_groups_text"
                 android:layout_gravity="start|center_vertical"
                 android:textColor="@color/primary_text_default_material_light"
                 android:textSize="@dimen/abc_text_size_large_material"

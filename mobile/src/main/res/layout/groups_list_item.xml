@@ -18,8 +18,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_gravity="center_vertical"
-            android:layout_margin="8dp"
-            android:text="Test" />
+            android:layout_margin="8dp" />
 
         <TextView
             android:id="@+id/title"

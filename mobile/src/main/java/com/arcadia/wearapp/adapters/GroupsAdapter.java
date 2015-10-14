@@ -36,7 +36,7 @@ public class GroupsAdapter extends ArrayAdapter {
     private ProgressDialog progressDialog;
 
     public GroupsAdapter(Context context, RealmResults<ParseGroup> realmList) {
-        super(context, R.layout.grid_item, realmList);
+        super(context, R.layout.groups_list_item, realmList);
         this.realmList = realmList;
         this.context = context;
     }
@@ -47,7 +47,7 @@ public class GroupsAdapter extends ArrayAdapter {
         final ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
-            convertView = LayoutInflater.from(context).inflate(R.layout.grid_item, null, false);
+            convertView = LayoutInflater.from(context).inflate(R.layout.groups_list_item, null, false);
             holder.name = (TextView) convertView.findViewById(R.id.title);
             holder.checkBox = (CheckBox) convertView.findViewById(R.id.group_checkbox);
             holder.aboutIcon = (ImageView) convertView.findViewById(R.id.icon);

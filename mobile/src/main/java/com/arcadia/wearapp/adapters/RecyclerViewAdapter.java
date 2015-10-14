@@ -71,7 +71,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == TYPE_ITEM) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item, parent, false);
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.event_list_item, parent, false);
             if (onClickListener != null) {
                 v.setOnClickListener(onClickListener);
                 if (onLongClickListener != null)
@@ -79,7 +79,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
             return new ItemViewHolder(v);
         } else if (viewType == TYPE_HEADER) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_hearder, parent, false);
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.events_list_hearder, parent, false);
             return new HeaderViewHolder(v);
         }
         throw new RuntimeException("there is no type that matches the type " + viewType + " + make sure your using types correctly");
