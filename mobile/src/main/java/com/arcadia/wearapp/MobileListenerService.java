@@ -90,7 +90,7 @@ public class MobileListenerService extends WearableListenerService {
             final String action = intent.getAction();
             switch (action) {
                 case Action_Send_List:
-                    if (googleClient!=null && googleClient.isConnected()) {
+                    if (googleClient != null && googleClient.isConnected()) {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
@@ -189,9 +189,9 @@ public class MobileListenerService extends WearableListenerService {
         json.addProperty("title", event.getTitle());
         json.addProperty("start_date", DateFormat.getDateTimeInstance().format(event.getStartDate()));
         json.addProperty("end_date", DateFormat.getDateTimeInstance().format(event.getEndDate()));
-        if (!event.getDescription().isEmpty())
+        if (event.getDescription() != null)
             json.addProperty("description", event.getDescription());
-        if (!event.getGroupID().isEmpty())
+        if (event.getGroupID() != null)
             json.addProperty("group_id", event.getGroupID());
         return json;
     }

@@ -1,7 +1,6 @@
 package com.arcadia.wearapp;
 
 import android.app.Application;
-import android.text.format.DateFormat;
 
 import com.arcadia.wearapp.realm_objects.ParseGroup;
 import com.parse.FindCallback;
@@ -11,7 +10,6 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.ubertesters.sdk.Ubertesters;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 import io.realm.Realm;

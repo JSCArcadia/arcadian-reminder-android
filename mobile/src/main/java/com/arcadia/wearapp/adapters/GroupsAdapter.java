@@ -133,11 +133,12 @@ public class GroupsAdapter extends ArrayAdapter {
                         Realm realm = Realm.getInstance(context);
                         for (ParseObject object : list) {
                             Event event = new Event(object.get("title").toString());
-                            // increment index
-                            int nextID = (int) (realm.where(Event.class).maximumInt("eventID") + 1);
+                            long nextID = 1;
+                            if (realm.where(Event.class).max("eventID") != null)
+                                nextID += (long) realm.where(Event.class).max("eventID");
 
                             // insert new value
-                            event.setEventID(nextID);
+                            event.setEventID((int) nextID);
 
                             Date startDate = (Date) object.get("startDate");
                             event.setStartDate(startDate);
@@ -146,9 +147,9 @@ public class GroupsAdapter extends ArrayAdapter {
                             if (endDate != null)
                                 event.setEndDate(endDate);
 
-                            Object description = object.get("description");
-                            if (description != null)
-                                event.setDescription(description.toString());
+                            String description = object.get("description") == null ? null : object.get("description").toString();
+
+                            event.setDescription(description);
 
                             event.setGroupID(groupID);
 

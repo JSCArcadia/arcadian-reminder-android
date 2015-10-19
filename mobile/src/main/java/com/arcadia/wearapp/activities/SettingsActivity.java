@@ -13,11 +13,10 @@ import com.arcadia.wearapp.R;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    public static String PARSE_VERSION = "1.9.2";
-    public static String REALM_VERSION = "0.80.3";
+    public static String PARSE_VERSION = "1.10.2";
+    public static String REALM_VERSION = "0.83.0";
 
     private ListPreference timezoneList;
-    private SwitchPreference timeFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,19 +45,6 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-//        timeFormat = (SwitchPreference) preferenceFragment.findFragmentPreference("timeFormat");
-//
-//        timeFormat.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-//            @Override
-//            public boolean onPreferenceChange(Preference preference, Object newValue) {
-//                setTimeFormatChecked((boolean) newValue);
-//                return true;
-//            }
-//        });
-//        if (DateFormat.is24HourFormat(this)) {
-//            timeFormat.setChecked(true);
-//            setTimeFormatChecked(true);
-//        }
         Preference realmVersionPreference = preferenceFragment.findFragmentPreference("realmVersion");
         realmVersionPreference.setSummary(REALM_VERSION);
 

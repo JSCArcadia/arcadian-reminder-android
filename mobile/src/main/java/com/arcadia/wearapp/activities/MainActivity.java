@@ -27,10 +27,7 @@ import com.arcadia.wearapp.realm_objects.ParseGroup;
 import com.arcadia.wearapp.realm_objects.Reminder;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import io.realm.Realm;
@@ -102,12 +99,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 if (realm.where(Event.class).equalTo("title", event.getTitle()).equalTo("startDate", event.getStartDate()).equalTo("endDate", event.getEndDate()).count() == 0) {
 
                                     Set<Reminder> reminders = resolver.getCalendarReminders(event.getEventID());
-                                    int eventId = event.getEventID();
+                                    // increment index
+                                    long nextID = 1;
+                                    if (realm.where(Event.class).max("eventID") != null)
+                                        nextID += (long) realm.where(Event.class).max("eventID");
 
-                                    if (realm.where(Event.class).equalTo("eventID", event.getEventID()).count() > 0) {
-                                        eventId = (int) (realm.where(Event.class).maximumInt("eventID") + 1);
-                                        event.setEventID(eventId);
-                                    }
+                                    // insert new value
+                                    event.setEventID((int) nextID);
 
                                     realm.beginTransaction();
                                     realm.copyToRealmOrUpdate(event);
@@ -115,10 +113,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                                     for (Reminder reminder : reminders) {
                                         if (realm.where(Reminder.class).equalTo("eventID", reminder.getEventID()).equalTo("alertOffset", reminder.getAlertOffset()).count() == 0) {
-                                            reminder.setEventID(eventId);
+                                            reminder.setEventID((int) nextID);
                                             if (realm.where(Reminder.class).equalTo("reminderID", reminder.getReminderID()).count() > 0) {
-                                                int newReminderId = (int) (realm.where(Reminder.class).maximumInt("reminderID") + 1);
-                                                reminder.setReminderID(newReminderId);
+                                                long newReminderId = 1;
+                                                if (realm.where(Reminder.class).max("reminderID") != null)
+                                                    nextID += (int) realm.where(Reminder.class).max("reminderID");
+
+                                                reminder.setReminderID((int)newReminderId);
                                             }
                                             realm.beginTransaction();
                                             realm.copyToRealmOrUpdate(reminder);
@@ -239,16 +240,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             for (int i = 1; i < 8; i++) {
                 Event event = new Event(String.format("Item no. %d", i));
                 // increment index
-                int nextID = (int) (realm.where(Event.class).maximumInt("eventID") + 1);
+                long nextID = 1;
+                if (realm.where(Event.class).max("eventID") != null)
+                    nextID += (long) realm.where(Event.class).max("eventID");
 
                 // insert new value
-                event.setEventID(nextID);
+                event.setEventID((int) nextID);
 
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(Calendar.SECOND, 0);
                 calendar.add(Calendar.DAY_OF_YEAR, i);
                 event.setStartDate(calendar.getTime());
-                event.setEndDate(calendar.getTime());
 
                 realm.beginTransaction();
                 realm.copyToRealmOrUpdate(event);
@@ -328,7 +330,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onLongClick(View v) {
         int position = recyclerView.getChildLayoutPosition(v);
-        Realm realm = Realm.getInstance(this);
         Event event = adapter.getItem(position);
         if (!event.getDescription().equals(""))
             Toast.makeText(MainActivity.this, event.getDescription(), Toast.LENGTH_SHORT).show();

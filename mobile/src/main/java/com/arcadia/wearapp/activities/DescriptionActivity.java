@@ -39,7 +39,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -249,14 +248,14 @@ public class DescriptionActivity extends AppCompatActivity {
             if (event != null) {
                 nameEditText.setText(event.getTitle());
                 startDate.setTime(event.getStartDate());
-                endDate.setTime(event.getEndDate());
-                if (startDate != null) {
-                    startDateTV.setText(dateFormat.format(startDate.getTime()));
-                    startTimeTV.setText(timeFormat.format(startDate.getTime()));
-                    if (endDate != null && endDate.after(startDate)) {
-                        endDateTV.setText(dateFormat.format(endDate.getTime()));
-                        endTimeTV.setText(timeFormat.format(endDate.getTime()));
-                    }
+                startDateTV.setText(dateFormat.format(startDate.getTime()));
+                startTimeTV.setText(timeFormat.format(startDate.getTime()));
+                if (event.getEndDate() != null && event.getEndDate().after(startDate.getTime())) {
+                    endDate.setTime(event.getEndDate());
+                    endDateTV.setText(dateFormat.format(endDate.getTime()));
+                    endTimeTV.setText(timeFormat.format(endDate.getTime()));
+                } else {
+                    endDate = null;
                 }
                 if (event.getDescription() != null)
                     descriptionEditText.setText(event.getDescription());
@@ -274,7 +273,7 @@ public class DescriptionActivity extends AppCompatActivity {
                         repeatSpinner.setSelection(3);
                     }
                     repeatUntilLayout.setVisibility(View.VISIBLE);
-                    if (repeatRule.getEndRepeatDate().before(new Date((long) getResources().getInteger(R.integer.utc_date_max_value) * 1000))) {
+                    if (repeatRule.getEndRepeatDate() != null) {
                         repeatUntilSpinner.setSelection(1);
 
                         repeatDate = Calendar.getInstance();
@@ -284,16 +283,18 @@ public class DescriptionActivity extends AppCompatActivity {
                         repeatTimeTextView.setText(timeFormat.format(repeatDate.getTime()));
 
                         repeatDateLayout.setVisibility(View.VISIBLE);
-                    } else
+                    } else {
                         repeatUntilSpinner.setSelection(0);
+                    }
                 }
                 RealmResults<Reminder> reminders = realm.where(Reminder.class).equalTo("eventID", event.getEventID()).findAll();
                 if (!reminders.isEmpty()) {
                     for (Reminder reminder : reminders) {
                         addRemindView(reminder);
                     }
-                } else
+                } else {
                     remindersLabel.setVisibility(View.GONE);
+                }
             }
         } else {
             allowEditMode();
@@ -587,15 +588,14 @@ public class DescriptionActivity extends AppCompatActivity {
             event.setTitle(nameEditText.getText().toString());
             realm.commitTransaction();
 
-            if (!descriptionEditText.getText().toString().isEmpty()) {
-                realm.beginTransaction();
-                event.setDescription(descriptionEditText.getText().toString());
-                realm.commitTransaction();
-            } else {
-                realm.beginTransaction();
-                event.setDescription("");
-                realm.commitTransaction();
+            String description = null;
+            if (descriptionEditText.getText() != null) {
+                description = descriptionEditText.getText().toString();
             }
+            realm.beginTransaction();
+            event.setDescription(description);
+            realm.commitTransaction();
+
             if (startDate != null) {
                 if (!isLocally)
                     startDate.setTimeZone(TimeZone.getTimeZone(timezone));
@@ -616,11 +616,13 @@ public class DescriptionActivity extends AppCompatActivity {
 
             if (event.getEventID() == 0) {
                 // increment index
-                eventID = (int) (realm.where(Event.class).maximumInt("eventID") + 1);
+                long nextID = 1;
+                if (realm.where(Event.class).max("eventID") != null)
+                    nextID += (long) realm.where(Event.class).max("eventID");
 
                 realm.beginTransaction();
                 // insert new value
-                event.setEventID(eventID);
+                event.setEventID((int) nextID);
                 realm.commitTransaction();
 
                 realm.beginTransaction();
@@ -635,17 +637,12 @@ public class DescriptionActivity extends AppCompatActivity {
 
                 realm.beginTransaction();
                 repeatRule.setRepeatPeriod(repeatTimeMillis);
-                if (repeatDate == null) {
-                    repeatRule.setEndRepeatDate(new Date((long) getResources().getInteger(R.integer.utc_date_max_value) * 1000));
-                } else
-                    repeatRule.setEndRepeatDate(repeatDate.getTime());
+                repeatRule.setEndRepeatDate(repeatDate == null ? null : repeatDate.getTime());
                 if (repeatRule.getRuleID() == 0) {
-                    int newRuleID;
+                    int newRuleID = 1;
                     RealmQuery<RepeatRule> query = realm.where(RepeatRule.class);
-                    if (query.count() > 0)
-                        newRuleID = (int) (query.maximumInt("ruleID") + 1);
-                    else
-                        newRuleID = 1;
+                    if (query.count() > 0 && (query.max("ruleID") != null))
+                        newRuleID += (long) query.max("ruleID");
                     repeatRule.setRuleID(newRuleID);
                 }
                 realm.copyToRealmOrUpdate(repeatRule);
@@ -663,9 +660,9 @@ public class DescriptionActivity extends AppCompatActivity {
 
                 Reminder reminder = view.getReminder();
                 if (realm.where(Reminder.class).equalTo("reminderID", reminder.getReminderID()).findFirst() == null) {
-                    // increment index
-                    int nextID = (int) (realm.where(Reminder.class).maximumInt("reminderID") + 1);
-                    // insert new value
+                    int nextID = 1;
+                    if (realm.where(Event.class).max("eventID") != null)
+                        nextID += (int) realm.where(Event.class).max("eventID");
 
                     realm.beginTransaction();
                     reminder.setReminderID(nextID);

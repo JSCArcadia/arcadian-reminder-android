@@ -32,7 +32,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private static final int TYPE_HEADER = 1;
     private static final int TYPE_ITEM = 0;
-
+    private static final int maxRepeatsCount = 100;
     private Context context;
     private String filter = "";
     private SimpleDateFormat shortDateFormat;
@@ -97,7 +97,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             viewHolder.nameTV.setText(event.getTitle());
             if (event.getStartDate() != null) {
                 viewHolder.dateTV.setText(longDateFormat.format(event.getStartDate()));
-                if (event.getEndDate().after(event.getStartDate()))
+                if (event.getEndDate() != null && event.getEndDate().after(event.getStartDate()))
                     viewHolder.dateTV.append(String.format(" - %s", longDateFormat.format(event.getEndDate())));
             }
 //            realm.close();
@@ -295,20 +295,22 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             RepeatRule rule = realm.where(RepeatRule.class).equalTo("eventID", event.getEventID()).findFirst();
             if (rule != null) {
                 if (rule.getRepeatPeriod() != 0) {
-                    long nextStartDate = event.getStartDate().getTime();
-                    long nextEndDate = event.getEndDate().getTime();
-                    Date maxRepeatDate = new Date(rule.getEndRepeatDate().getTime());
+                    Date nextStartDate = event.getStartDate();
+                    Date nextEndDate = event.getEndDate();
+                    Date maxRepeatDate = new Date();
                     long repeats = 0;
-                    if (rule.getEndRepeatDate().after(realm.where(Event.class).maximumDate("startDate"))) {
+                    if (rule.getEndRepeatDate() == null || realm.where(Event.class).maximumDate("startDate").before(rule.getEndRepeatDate())) {
                         maxRepeatDate.setTime(realm.where(Event.class).maximumDate("startDate").getTime());
                         repeats++;
+                    } else {
+                        maxRepeatDate.setTime(rule.getEndRepeatDate().getTime());
                     }
                     repeats += ((maxRepeatDate.getTime() - event.getStartDate().getTime()) / rule.getRepeatPeriod());
-                    if (repeats > 100) repeats = 100;
+                    if (repeats > maxRepeatsCount) repeats = maxRepeatsCount;
                     for (int i = 0; i < repeats; i++) {
-                        nextStartDate += rule.getRepeatPeriod();
-                        nextEndDate += rule.getRepeatPeriod();
-                        dataSet.add(new Event(event.getEventID(), event.getTitle(), new Date(nextStartDate), new Date(nextEndDate), event.getDescription(), event.getGroupID()));
+                        nextStartDate = new Date(nextStartDate.getTime() + rule.getRepeatPeriod());
+                        nextEndDate = nextEndDate == null ? null : new Date(nextEndDate.getTime() + rule.getRepeatPeriod());
+                        dataSet.add(new Event(event.getEventID(), event.getTitle(), nextStartDate, nextEndDate, event.getDescription(), event.getGroupID()));
                     }
                 }
             }
@@ -347,7 +349,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 //        Realm realm = Realm.getInstance(context);
         for (Event event : allDataSet) {
             if (event.getTitle().toLowerCase().contains(filter.toLowerCase()))
-                if (groupID == null || event.getGroupID().equals(groupID))
+                if (groupID == null || groupID.equals(event.getGroupID()))
                     events.add(event);
         }
         if (!events.isEmpty())

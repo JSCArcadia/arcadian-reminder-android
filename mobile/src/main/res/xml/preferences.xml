@@ -15,13 +15,6 @@
             android:summary="GMT+03:00"
             android:title="Set timezone" />
     </PreferenceCategory>
-    <!--<PreferenceCategory android:title="Date Format">-->
-        <!--<SwitchPreference-->
-            <!--android:defaultValue="false"-->
-            <!--android:key="timeFormat"-->
-            <!--android:summary="01:00 PM"-->
-            <!--android:title="24h format" />-->
-    <!--</PreferenceCategory>-->
     <PreferenceCategory android:title="Time Periods">
         <SwitchPreference
             android:defaultValue="false"
