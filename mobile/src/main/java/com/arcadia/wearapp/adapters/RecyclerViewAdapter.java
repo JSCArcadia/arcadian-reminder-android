@@ -296,7 +296,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (rule != null) {
                 if (rule.getRepeatPeriod() != 0) {
                     Date nextStartDate = event.getStartDate();
-                    Date nextEndDate = event.getEndDate();
+                    Date nextEndDate;
                     Date maxRepeatDate = new Date();
                     long repeats = 0;
                     if (rule.getEndRepeatDate() == null || realm.where(Event.class).maximumDate("startDate").before(rule.getEndRepeatDate())) {
@@ -309,7 +309,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     if (repeats > maxRepeatsCount) repeats = maxRepeatsCount;
                     for (int i = 0; i < repeats; i++) {
                         nextStartDate = new Date(nextStartDate.getTime() + rule.getRepeatPeriod());
-                        nextEndDate = nextEndDate == null ? null : new Date(nextEndDate.getTime() + rule.getRepeatPeriod());
+                        nextEndDate = event.getEndDate() == null ? null : new Date(event.getEndDate().getTime() + rule.getRepeatPeriod());
                         dataSet.add(new Event(event.getEventID(), event.getTitle(), nextStartDate, nextEndDate, event.getDescription(), event.getGroupID()));
                     }
                 }

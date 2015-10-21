@@ -17,14 +17,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.arcadia.wearapp.CalendarContentResolver;
 import com.arcadia.wearapp.DividerItemDecoration;
-import com.arcadia.wearapp.MobileListenerService;
 import com.arcadia.wearapp.R;
 import com.arcadia.wearapp.adapters.RecyclerViewAdapter;
 import com.arcadia.wearapp.realm_objects.Event;
 import com.arcadia.wearapp.realm_objects.ParseGroup;
 import com.arcadia.wearapp.realm_objects.Reminder;
+import com.arcadia.wearapp.services.CalendarContentResolver;
+import com.arcadia.wearapp.services.MobileListenerService;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import java.util.Calendar;
@@ -117,9 +117,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             if (realm.where(Reminder.class).equalTo("reminderID", reminder.getReminderID()).count() > 0) {
                                                 long newReminderId = 1;
                                                 if (realm.where(Reminder.class).max("reminderID") != null)
-                                                    nextID += (int) realm.where(Reminder.class).max("reminderID");
+                                                    newReminderId += (long) realm.where(Reminder.class).max("reminderID");
 
-                                                reminder.setReminderID((int)newReminderId);
+                                                reminder.setReminderID((int) newReminderId);
                                             }
                                             realm.beginTransaction();
                                             realm.copyToRealmOrUpdate(reminder);
@@ -249,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(Calendar.SECOND, 0);
-                calendar.add(Calendar.DAY_OF_YEAR, i);
+                calendar.add(Calendar.DAY_OF_YEAR, i - 1);
                 event.setStartDate(calendar.getTime());
 
                 realm.beginTransaction();
@@ -331,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onLongClick(View v) {
         int position = recyclerView.getChildLayoutPosition(v);
         Event event = adapter.getItem(position);
-        if (!event.getDescription().equals(""))
+        if (event.getDescription() != null)
             Toast.makeText(MainActivity.this, event.getDescription(), Toast.LENGTH_SHORT).show();
         return true;
     }

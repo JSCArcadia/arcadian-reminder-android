@@ -1,4 +1,4 @@
-package com.arcadia.wearapp.adapters;
+package com.arcadia.wearapp.services;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -11,7 +11,6 @@ import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
-import com.arcadia.wearapp.MobileListenerService;
 import com.arcadia.wearapp.R;
 import com.arcadia.wearapp.activities.MainActivity;
 import com.arcadia.wearapp.realm_objects.Event;
@@ -43,33 +42,8 @@ public class AlarmReceiver extends BroadcastReceiver {
         this.context = context;
         this.dateFormat = (SimpleDateFormat) SimpleDateFormat.getDateInstance(java.text.DateFormat.DEFAULT, Locale.getDefault());
         showNotification(intent.getIntExtra("reminderId", 0));
-//        Intent service1 = new Intent(context, MyAlarmService.class);
-//        context.startService(service1);
     }
 
-    //
-//    public NotifyService() {
-//        super(null);
-//    }
-//
-//    @Override
-//    public IBinder onBind(Intent intent) {
-//        return mBinder;
-//    }
-//
-//    @Override
-//    protected void onHandleIntent(Intent intent) {
-////        Log.i("LocalService", "Received start id " + startId + ": " + intent);
-//        int reminderId = 0;
-//        if (intent.getExtras().containsKey(getString(R.string.intent_reminder_id_key))) {
-//            reminderId = intent.getIntExtra(getString(R.string.intent_reminder_id_key), 0);
-//        }
-//
-//        // If this service was started by out AlarmTask intent then we want to show our notification
-//        if (intent.getBooleanExtra(INTENT_NOTIFY, false))
-//            showNotification(reminderId);
-//    }
-//
     private void showNotification(int reminderId) {
         boolean justInTime = true;
 
@@ -107,7 +81,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             if (event.getDescription() != null && event.getDescription().isEmpty())
                 contentText += String.format("\n%s", event.getDescription());
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.mipmap.ic_notification_small)
                     .setContentTitle(event.getTitle())
                     .setContentText(contentText)
                     .setContentText(contentText)
@@ -116,9 +90,6 @@ public class AlarmReceiver extends BroadcastReceiver {
                     .setVibrate(new long[]{1000, 1000, 1000})
                     .setLights(Color.CYAN, 1000, 1000)
                     .setContentIntent(viewPendingIntent);
-//        realm.beginTransaction();
-//        realm.where(Reminder.class).equalTo("reminderID", remindId).findFirst().removeFromRealm();
-//        realm.commitTransaction();
             realm.close();
 
             if (justInTime)
@@ -126,9 +97,4 @@ public class AlarmReceiver extends BroadcastReceiver {
                 notificationManager.notify(reminderId, notificationBuilder.build());
         }
     }
-//    public class ServiceBinder extends Binder {
-//        NotifyService getService() {
-//            return NotifyService.this;
-//        }
-//    }
 }

@@ -17,7 +17,6 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -43,13 +42,13 @@ public class ReminderView {
             context.removeReminder(ReminderView.this);
         }
     };
-    private Calendar calendar;
+    private Calendar calendar = null;
     private DatePickerDialog.OnDateSetListener reminderDateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePickerDialog datePickerDialog, int year, int monthOfYear, int dayOfMonth) {
-
             calendar.set(year, monthOfYear, dayOfMonth);
             calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
             setDate(calendar.getTime());
             context.setChanged(true);
         }
@@ -57,10 +56,10 @@ public class ReminderView {
     private TimePickerDialog.OnTimeSetListener reminderTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(RadialPickerLayout radialPickerLayout, int hourOfDay, int minute) {
-
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
             calendar.set(Calendar.MINUTE, minute);
             calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
             setDate(calendar.getTime());
             context.setChanged(true);
         }
@@ -72,8 +71,6 @@ public class ReminderView {
         this.editMode = activity.getEditMode();
         reminderItem = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.reminder_item, parent, false);
         calendar = Calendar.getInstance();
-        if (activity.startDate != null)
-            calendar.setTime(activity.startDate.getTime());
 
         if (reminder.getEventID() != 0) {
             Realm realm = Realm.getInstance(activity);
@@ -83,7 +80,9 @@ public class ReminderView {
                 calendar.setTime(event.getStartDate());
                 calendar.add(Calendar.SECOND, reminder.getAlertOffset());
             }
-        }
+        } else if (activity.startDate != null)
+            calendar.setTime(activity.startDate.getTime());
+
         if (reminderItem != null) {
             spinner = (Spinner) reminderItem.findViewById(R.id.reminder_spinner);
             customDateLayout = (LinearLayout) reminderItem.findViewById(R.id.reminder_custom_date_layout);
@@ -107,6 +106,7 @@ public class ReminderView {
                 context.setChanged(true);
                 if (context.startDate != null)
                     calendar.setTime(context.startDate.getTime());
+                customDateLayout.setVisibility(View.GONE);
                 switch (position) {
                     case 1:
                         calendar.add(Calendar.SECOND, remind_5_min_before);
@@ -117,12 +117,9 @@ public class ReminderView {
                     case 3:
                         calendar.add(Calendar.SECOND, remind_1_hour_before);
                         break;
-                }
-                // "Custom date" is the last item in the remind_types array
-                if (position == (context.getResources().getStringArray(R.array.reminder_types_array).length - 1)) {
-                    customDateLayout.setVisibility(View.VISIBLE);
-                } else {
-                    customDateLayout.setVisibility(View.GONE);
+                    case 4:
+                        customDateLayout.setVisibility(View.VISIBLE);
+                        break;
                 }
             }
 
@@ -156,18 +153,13 @@ public class ReminderView {
     }
 
     private void showDatePicker() {
-        calendar.set(Calendar.SECOND, 0);
         DatePickerDialog dpd = DatePickerDialog.newInstance(reminderDateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         dpd.setCancelable(true);
         dpd.show(context.getFragmentManager(), context.getResources().getString(R.string.datepicker_tag));
     }
 
     protected void showTimePicker() {
-        calendar.set(Calendar.SECOND, 0);
-        boolean is24hFormat = false;
-        if (DateFormat.is24HourFormat(context))
-            is24hFormat = true;
-        TimePickerDialog tpd = TimePickerDialog.newInstance(reminderTimeSetListener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), is24hFormat);
+        TimePickerDialog tpd = TimePickerDialog.newInstance(reminderTimeSetListener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), DateFormat.is24HourFormat(context));
         tpd.setCancelable(true);
         tpd.show(context.getFragmentManager(), context.getResources().getString(R.string.timepicker_tag));
     }
@@ -189,18 +181,18 @@ public class ReminderView {
             dateTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String text = dateTextView.getText().toString();
+                    String text = dateTextView.getText().toString() + timeTextView.getText().toString();
 
                     if (text.isEmpty())
-                        calendar.setTime(ReminderView.this.calendar.getTime());
-                    else
-                        try {
-                            Calendar date = Calendar.getInstance();
-                            date.setTime(context.dateFormat.parse(text));
-                            calendar.set(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH));
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
+                        calendar.setTime(context.startDate.getTime());
+//                    else
+//                        try {
+//                            Calendar date = Calendar.getInstance();
+////                            date.setTime(context.dateFormat.parse(text));
+//                            calendar.set(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH));
+//                        } catch (ParseException e) {
+//                            e.printStackTrace();
+//                        }
                     showDatePicker();
                 }
             });
@@ -208,19 +200,10 @@ public class ReminderView {
             timeTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String text = timeTextView.getText().toString();
+                    String text = dateTextView.getText().toString() + timeTextView.getText().toString();
 
                     if (text.isEmpty())
-                        calendar.setTime(ReminderView.this.calendar.getTime());
-                    else
-                        try {
-                            Calendar time = Calendar.getInstance();
-                            time.setTime(context.timeFormat.parse(text));
-                            calendar.set(Calendar.HOUR, time.get(Calendar.HOUR));
-                            calendar.set(Calendar.MINUTE, time.get(Calendar.MINUTE));
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
+                        calendar.setTime(context.startDate.getTime());
                     showTimePicker();
                 }
             });

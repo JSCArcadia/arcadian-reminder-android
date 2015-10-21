@@ -1,4 +1,4 @@
-package com.arcadia.wearapp;
+package com.arcadia.wearapp.services;
 
 import android.content.ContentResolver;
 import android.content.Context;

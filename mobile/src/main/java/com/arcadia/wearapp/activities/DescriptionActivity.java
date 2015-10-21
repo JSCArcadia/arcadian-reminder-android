@@ -25,12 +25,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.arcadia.wearapp.MobileListenerService;
 import com.arcadia.wearapp.R;
 import com.arcadia.wearapp.adapters.ReminderView;
 import com.arcadia.wearapp.realm_objects.Event;
 import com.arcadia.wearapp.realm_objects.Reminder;
 import com.arcadia.wearapp.realm_objects.RepeatRule;
+import com.arcadia.wearapp.services.MobileListenerService;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
@@ -55,7 +55,7 @@ public class DescriptionActivity extends AppCompatActivity {
     public SimpleDateFormat timeFormat;
     public SimpleDateFormat dateFormat;
     private LinearLayout remindersLayout;
-    private Calendar endDate = Calendar.getInstance();
+    private Calendar endDate;
     private Calendar repeatDate = Calendar.getInstance();
     private boolean editMode;
     private List<ReminderView> reminderViews;
@@ -73,7 +73,7 @@ public class DescriptionActivity extends AppCompatActivity {
     private TextView remindersLabel;
     private TextView endDateTV;
     private TextView startTimeTV;
-    private TextView repeatDateTextView;
+    private TextView repeatDateTV;
     private TextView repeatTimeTextView;
     private ImageButton addReminderButton;
     private EditText nameEditText;
@@ -82,6 +82,11 @@ public class DescriptionActivity extends AppCompatActivity {
     TimePickerDialog.OnTimeSetListener endTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(RadialPickerLayout radialPickerLayout, int hourOfDay, int minute) {
+            if (endDate == null) {
+                endDate = Calendar.getInstance();
+                if (endDateTV.getText().toString().isEmpty())
+                    endDate.setTime(startDate.getTime());
+            }
             endDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
             endDate.set(Calendar.MINUTE, minute);
             endDate.set(Calendar.SECOND, 0);
@@ -119,9 +124,11 @@ public class DescriptionActivity extends AppCompatActivity {
             if (startDateTV.getText().toString().isEmpty())
                 startDateTV.setText(dateFormat.format(startDate.getTime()));
             if (endDateTV.getText().toString().isEmpty() || endTimeTV.getText().toString().isEmpty()) {
-                endDate.setTime(startDate.getTime());
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(DescriptionActivity.this);
                 if (preferences.getBoolean("timePeriod", false)) {
+                    if (endDate == null)
+                        endDate = Calendar.getInstance();
+                    endDate.setTime(startDate.getTime());
                     endDate.add(Calendar.HOUR, 1);
                     endDateTV.setText(dateFormat.format(endDate.getTime()));
                     endTimeTV.setText(timeFormat.format(endDate.getTime()));
@@ -138,7 +145,11 @@ public class DescriptionActivity extends AppCompatActivity {
     DatePickerDialog.OnDateSetListener endDateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePickerDialog datePickerDialog, int year, int monthOfYear, int dayOfMonth) {
-            endDate.setTime(startDate.getTime());
+            if (endDate == null) {
+                endDate = Calendar.getInstance();
+                if (endTimeTV.getText().toString().isEmpty())
+                    endDate.setTime(startDate.getTime());
+            }
             endDate.set(year, monthOfYear, dayOfMonth);
             endDate.set(Calendar.SECOND, 0);
             endDateTV.setText(dateFormat.format(endDate.getTime()));
@@ -164,8 +175,8 @@ public class DescriptionActivity extends AppCompatActivity {
             repeatDate.set(Calendar.MILLISECOND, 0);
 
             repeatTimeTextView.setText(timeFormat.format(repeatDate.getTime()));
-            if (repeatDateTextView.getText().toString().isEmpty())
-                repeatDateTextView.setText(dateFormat.format(repeatDate.getTime()));
+            if (repeatDateTV.getText().toString().isEmpty())
+                repeatDateTV.setText(dateFormat.format(repeatDate.getTime()));
             setChanged(true);
         }
     };
@@ -176,14 +187,13 @@ public class DescriptionActivity extends AppCompatActivity {
                 repeatDate = Calendar.getInstance();
                 repeatDate.setTime(startDate.getTime());
             }
-
             repeatDate.set(Calendar.YEAR, year);
             repeatDate.set(Calendar.MONTH, monthOfYear);
             repeatDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
             repeatDate.set(Calendar.SECOND, 0);
             repeatDate.set(Calendar.MILLISECOND, 0);
 
-            repeatDateTextView.setText(dateFormat.format(repeatDate.getTime()));
+            repeatDateTV.setText(dateFormat.format(repeatDate.getTime()));
             if (repeatTimeTextView.getText().toString().isEmpty())
                 repeatTimeTextView.setText(timeFormat.format(repeatDate.getTime()));
             setChanged(true);
@@ -232,7 +242,7 @@ public class DescriptionActivity extends AppCompatActivity {
             repeatUntilSpinner.setBackgroundResource(R.drawable.custom_spinner_drawable);
         }
 
-        repeatDateTextView = (TextView) findViewById(R.id.repeat_until_date);
+        repeatDateTV = (TextView) findViewById(R.id.repeat_until_date);
         repeatTimeTextView = (TextView) findViewById(R.id.repeat_until_time);
 
         remindersLayout = (LinearLayout) findViewById(R.id.reminders_list);
@@ -251,6 +261,7 @@ public class DescriptionActivity extends AppCompatActivity {
                 startDateTV.setText(dateFormat.format(startDate.getTime()));
                 startTimeTV.setText(timeFormat.format(startDate.getTime()));
                 if (event.getEndDate() != null && event.getEndDate().after(startDate.getTime())) {
+                    endDate = Calendar.getInstance();
                     endDate.setTime(event.getEndDate());
                     endDateTV.setText(dateFormat.format(endDate.getTime()));
                     endTimeTV.setText(timeFormat.format(endDate.getTime()));
@@ -279,7 +290,7 @@ public class DescriptionActivity extends AppCompatActivity {
                         repeatDate = Calendar.getInstance();
                         repeatDate.setTime(repeatRule.getEndRepeatDate());
 
-                        repeatDateTextView.setText(dateFormat.format(repeatDate.getTime()));
+                        repeatDateTV.setText(dateFormat.format(repeatDate.getTime()));
                         repeatTimeTextView.setText(timeFormat.format(repeatDate.getTime()));
 
                         repeatDateLayout.setVisibility(View.VISIBLE);
@@ -408,8 +419,9 @@ public class DescriptionActivity extends AppCompatActivity {
         startTimeTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String text = startTimeTV.getText().toString();
                 Calendar calendar = Calendar.getInstance();
+                if (startDate == null)
+                    startDate = Calendar.getInstance();
                 calendar.setTime(startDate.getTime());
 
                 showTimePicker(calendar, datepicker_type_start);
@@ -432,7 +444,10 @@ public class DescriptionActivity extends AppCompatActivity {
         endDateTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDatePicker(endDate, datepicker_type_end);
+                if (endDate != null)
+                    showDatePicker(endDate, datepicker_type_end);
+                else
+                    showDatePicker(startDate, datepicker_type_end);
             }
         });
         endTimeTV.setEnabled(true);
@@ -441,7 +456,10 @@ public class DescriptionActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Calendar calendar = Calendar.getInstance();
 
-                calendar.setTime(endDate.getTime());
+                if (endDate != null)
+                    calendar.setTime(endDate.getTime());
+                else
+                    calendar.setTime(startDate.getTime());
 
                 showTimePicker(calendar, datepicker_type_end);
             }
@@ -451,10 +469,7 @@ public class DescriptionActivity extends AppCompatActivity {
             public void onClick(View v) {
                 endDateTV.setText("");
                 endTimeTV.setText("");
-                if (startDate == null)
-                    startDate = Calendar.getInstance();
-                endDate.setTime(startDate.getTime());
-                endDate.set(Calendar.SECOND, 0);
+                endDate = null;
                 clearEndDateButton.setVisibility(View.GONE);
                 setChanged(true);
             }
@@ -502,7 +517,7 @@ public class DescriptionActivity extends AppCompatActivity {
                 } else {
                     repeatDateLayout.setVisibility(View.GONE);
                     repeatDate = null;
-                    repeatDateTextView.setText("");
+                    repeatDateTV.setText("");
                     repeatTimeTextView.setText("");
                 }
             }
@@ -513,8 +528,8 @@ public class DescriptionActivity extends AppCompatActivity {
             }
         });
 
-        repeatDateTextView.setEnabled(true);
-        repeatDateTextView.setOnClickListener(new View.OnClickListener() {
+        repeatDateTV.setEnabled(true);
+        repeatDateTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (repeatDate != null)
@@ -604,7 +619,7 @@ public class DescriptionActivity extends AppCompatActivity {
                 realm.commitTransaction();
                 if (endDate == null) {
                     realm.beginTransaction();
-                    event.setEndDate(startDate.getTime());
+                    event.setEndDate(null);
                     realm.commitTransaction();
                 } else {
                     endDate.setTimeZone(TimeZone.getTimeZone(timezone));
@@ -660,12 +675,12 @@ public class DescriptionActivity extends AppCompatActivity {
 
                 Reminder reminder = view.getReminder();
                 if (realm.where(Reminder.class).equalTo("reminderID", reminder.getReminderID()).findFirst() == null) {
-                    int nextID = 1;
+                    long nextID = 1;
                     if (realm.where(Event.class).max("eventID") != null)
-                        nextID += (int) realm.where(Event.class).max("eventID");
+                        nextID += (long) realm.where(Event.class).max("eventID");
 
                     realm.beginTransaction();
-                    reminder.setReminderID(nextID);
+                    reminder.setReminderID((int) nextID);
                     realm.commitTransaction();
                 }
                 int offset = (int) (view.getDate().getTimeInMillis() - startDate.getTimeInMillis()) / 1000;
@@ -687,6 +702,7 @@ public class DescriptionActivity extends AppCompatActivity {
 
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(this, reminder.getReminderID(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
                 AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                alarmManager.cancel(pendingIntent);
                 if (repeatTimeMillis != 0)
                     alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), repeatTimeMillis, pendingIntent);
                 else
@@ -716,8 +732,9 @@ public class DescriptionActivity extends AppCompatActivity {
             Toast.makeText(this, "Start Date cannot be empty!", Toast.LENGTH_SHORT).show();
             return false;
         } else if (!endDateTV.getText().toString().isEmpty()) {
-            if (endDate.before(startDate)) {
+            if (endDate != null && endDate.before(startDate)) {
                 Toast.makeText(this, "End date cannot be before start date!", Toast.LENGTH_SHORT).show();
+                endDate = null;
                 endDateTV.setText("");
                 endTimeTV.setText("");
                 clearEndDateButton.setVisibility(View.GONE);
@@ -826,8 +843,6 @@ public class DescriptionActivity extends AppCompatActivity {
     }
 
     protected void showTimePicker(Calendar calendar, int type) {
-        if (calendar == null)
-            calendar = Calendar.getInstance();
         calendar.set(Calendar.SECOND, 0);
         TimePickerDialog tpd = null;
         boolean is24hFormat = false;

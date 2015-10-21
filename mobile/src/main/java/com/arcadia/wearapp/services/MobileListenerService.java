@@ -1,10 +1,11 @@
-package com.arcadia.wearapp;
+package com.arcadia.wearapp.services;
 
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.arcadia.wearapp.R;
 import com.arcadia.wearapp.activities.MainActivity;
 import com.arcadia.wearapp.realm_objects.Event;
 import com.google.android.gms.common.ConnectionResult;
@@ -188,7 +189,8 @@ public class MobileListenerService extends WearableListenerService {
         json.addProperty("event_id", event.getEventID());
         json.addProperty("title", event.getTitle());
         json.addProperty("start_date", DateFormat.getDateTimeInstance().format(event.getStartDate()));
-        json.addProperty("end_date", DateFormat.getDateTimeInstance().format(event.getEndDate()));
+        if (event.getEndDate() != null)
+            json.addProperty("end_date", DateFormat.getDateTimeInstance().format(event.getEndDate()));
         if (event.getDescription() != null)
             json.addProperty("description", event.getDescription());
         if (event.getGroupID() != null)
