@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Планировщик</string>
+    <string name="title_activity_description">Описание события</string>
+    <string name="open_button_text">Открыть на устройстве</string>
+    <string name="text_please_wait">Пожалуйста подождите</string>
+    <string name="no_events_text">Нет событий</string>
+    <string name="today_period_text">Сегодня</string>
+    <string name="week_period_text">Неделя</string>
+    <string name="month_period_text">Месяц</string>
+    <string name="year_period_text">Год</string>
+    <string name="no_connection_text">Нет подключения к устройству</string>
+</resources>

@@ -26,11 +26,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arcadia.wearapp.R;
-import com.arcadia.wearapp.adapters.ReminderView;
 import com.arcadia.wearapp.realm_objects.Event;
 import com.arcadia.wearapp.realm_objects.Reminder;
 import com.arcadia.wearapp.realm_objects.RepeatRule;
 import com.arcadia.wearapp.services.MobileListenerService;
+import com.arcadia.wearapp.views.ReminderView;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
@@ -56,7 +56,7 @@ public class DescriptionActivity extends AppCompatActivity {
     public SimpleDateFormat dateFormat;
     private LinearLayout remindersLayout;
     private Calendar endDate;
-    private Calendar repeatDate = Calendar.getInstance();
+    private Calendar repeatDate;
     private boolean editMode;
     private List<ReminderView> reminderViews;
     private int eventID = -1;
@@ -70,11 +70,11 @@ public class DescriptionActivity extends AppCompatActivity {
     private ImageButton clearStartDateButton;
     private ImageButton clearEndDateButton;
     private ImageButton clearNameButton;
+    private ImageButton clearDescriptionButton;
     private TextView remindersLabel;
     private TextView endDateTV;
     private TextView startTimeTV;
     private TextView repeatDateTV;
-    private TextView repeatTimeTextView;
     private ImageButton addReminderButton;
     private EditText nameEditText;
     private TextView endTimeTV;
@@ -105,6 +105,9 @@ public class DescriptionActivity extends AppCompatActivity {
             startDate.set(Calendar.SECOND, 0);
             startDate.set(Calendar.MILLISECOND, 0);
             startDateTV.setText(dateFormat.format(startDate.getTime()));
+            for (ReminderView reminderView : reminderViews) {
+                reminderView.setRemind(reminderView.getRemindPosition());
+            }
             if (startTimeTV.getText().toString().isEmpty())
                 startTimeTV.setText(timeFormat.format(startDate.getTime()));
             if (editMode) {
@@ -121,6 +124,9 @@ public class DescriptionActivity extends AppCompatActivity {
             startDate.set(Calendar.MINUTE, minute);
             startDate.set(Calendar.SECOND, 0);
             startTimeTV.setText(timeFormat.format(startDate.getTime()));
+            for (ReminderView reminderView : reminderViews) {
+                reminderView.setRemind(reminderView.getRemindPosition());
+            }
             if (startDateTV.getText().toString().isEmpty())
                 startDateTV.setText(dateFormat.format(startDate.getTime()));
             if (endDateTV.getText().toString().isEmpty() || endTimeTV.getText().toString().isEmpty()) {
@@ -129,7 +135,7 @@ public class DescriptionActivity extends AppCompatActivity {
                     if (endDate == null)
                         endDate = Calendar.getInstance();
                     endDate.setTime(startDate.getTime());
-                    endDate.add(Calendar.HOUR, 1);
+                    endDate.add(Calendar.HOUR_OF_DAY, 1);
                     endDateTV.setText(dateFormat.format(endDate.getTime()));
                     endTimeTV.setText(timeFormat.format(endDate.getTime()));
                     clearEndDateButton.setVisibility(View.VISIBLE);
@@ -161,25 +167,6 @@ public class DescriptionActivity extends AppCompatActivity {
         }
     };
     private EditText descriptionEditText;
-    private TimePickerDialog.OnTimeSetListener repeatTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
-        @Override
-        public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute) {
-            if (repeatDate == null) {
-                repeatDate = Calendar.getInstance();
-                repeatDate.setTime(startDate.getTime());
-            }
-
-            repeatDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
-            repeatDate.set(Calendar.MINUTE, minute);
-            repeatDate.set(Calendar.SECOND, 0);
-            repeatDate.set(Calendar.MILLISECOND, 0);
-
-            repeatTimeTextView.setText(timeFormat.format(repeatDate.getTime()));
-            if (repeatDateTV.getText().toString().isEmpty())
-                repeatDateTV.setText(dateFormat.format(repeatDate.getTime()));
-            setChanged(true);
-        }
-    };
     private DatePickerDialog.OnDateSetListener repeatDateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
@@ -190,12 +177,11 @@ public class DescriptionActivity extends AppCompatActivity {
             repeatDate.set(Calendar.YEAR, year);
             repeatDate.set(Calendar.MONTH, monthOfYear);
             repeatDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-            repeatDate.set(Calendar.SECOND, 0);
-            repeatDate.set(Calendar.MILLISECOND, 0);
+            repeatDate.set(Calendar.HOUR_OF_DAY, 23);
+            repeatDate.set(Calendar.MINUTE, 59);
+            repeatDate.set(Calendar.SECOND, 59);
 
             repeatDateTV.setText(dateFormat.format(repeatDate.getTime()));
-            if (repeatTimeTextView.getText().toString().isEmpty())
-                repeatTimeTextView.setText(timeFormat.format(repeatDate.getTime()));
             setChanged(true);
         }
     };
@@ -206,10 +192,9 @@ public class DescriptionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_description);
         getIntent().getFlags();
 
-        reminderViews = new ArrayList<>();
-
         nameEditText = (EditText) findViewById(R.id.name_text);
         clearNameButton = (ImageButton) findViewById(R.id.clear_name_text_button);
+        clearDescriptionButton = (ImageButton) findViewById(R.id.clear_description_text_button);
         clearStartDateButton = (ImageButton) findViewById(R.id.clear_start_date_button);
         clearEndDateButton = (ImageButton) findViewById(R.id.clear_end_date_button);
         addReminderButton = (ImageButton) findViewById(R.id.add_remind_button);
@@ -222,6 +207,8 @@ public class DescriptionActivity extends AppCompatActivity {
         descriptionEditText = (EditText) findViewById(R.id.description_text);
 
         remindersLabel = (TextView) findViewById(R.id.reminders_text_label);
+
+        reminderViews = new ArrayList<>();
 
         repeatSpinner = (Spinner) findViewById(R.id.repeat_spinner);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.repeat_rules_array, R.layout.spinner_item);
@@ -243,7 +230,6 @@ public class DescriptionActivity extends AppCompatActivity {
         }
 
         repeatDateTV = (TextView) findViewById(R.id.repeat_until_date);
-        repeatTimeTextView = (TextView) findViewById(R.id.repeat_until_time);
 
         remindersLayout = (LinearLayout) findViewById(R.id.reminders_list);
 
@@ -291,8 +277,6 @@ public class DescriptionActivity extends AppCompatActivity {
                         repeatDate.setTime(repeatRule.getEndRepeatDate());
 
                         repeatDateTV.setText(dateFormat.format(repeatDate.getTime()));
-                        repeatTimeTextView.setText(timeFormat.format(repeatDate.getTime()));
-
                         repeatDateLayout.setVisibility(View.VISIBLE);
                     } else {
                         repeatUntilSpinner.setSelection(0);
@@ -303,11 +287,11 @@ public class DescriptionActivity extends AppCompatActivity {
                     for (Reminder reminder : reminders) {
                         addRemindView(reminder);
                     }
-                } else {
-                    remindersLabel.setVisibility(View.GONE);
                 }
             }
         } else {
+            remindersLabel.setVisibility(View.GONE);
+            setTitle(getString(R.string.description_activity_new_event_title));
             allowEditMode();
         }
         realm.close();
@@ -326,16 +310,12 @@ public class DescriptionActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_description, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.menu_save_button:
                 if (invalidateData())
@@ -360,6 +340,28 @@ public class DescriptionActivity extends AppCompatActivity {
         Realm realm = Realm.getInstance(this);
         Event event = realm.where(Event.class).equalTo("eventID", eventID).findFirst();
         if (event != null) {
+            RealmResults<RepeatRule> repeatRules = realm.where(RepeatRule.class).equalTo("eventID", eventID).findAll();
+            if (repeatRules != null)
+                for (RepeatRule rule : repeatRules) {
+                    realm.beginTransaction();
+                    rule.removeFromRealm();
+                    realm.commitTransaction();
+                }
+
+            RealmResults<Reminder> reminders = realm.where(Reminder.class).equalTo("eventID", eventID).findAll();
+            for (Reminder reminder : reminders) {
+                Intent intent = new Intent();
+                intent.setAction(getString(R.string.broadcast_action));
+                intent.putExtra("reminderId", reminder.getReminderID());
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(this, reminder.getReminderID(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                alarmManager.cancel(pendingIntent);
+
+                realm.beginTransaction();
+                reminder.removeFromRealm();
+                realm.commitTransaction();
+            }
+
             realm.beginTransaction();
             event.removeFromRealm();
             realm.commitTransaction();
@@ -381,6 +383,7 @@ public class DescriptionActivity extends AppCompatActivity {
         editMode = true;
 
         nameEditText.setEnabled(true);
+        nameEditText.setFocusableInTouchMode(true);
         nameEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -407,6 +410,33 @@ public class DescriptionActivity extends AppCompatActivity {
         });
         if (!nameEditText.getText().toString().isEmpty())
             clearNameButton.setVisibility(View.VISIBLE);
+
+        descriptionEditText.setEnabled(true);
+        descriptionEditText.setCursorVisible(true);
+        descriptionEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                setChanged(true);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0)
+                    clearDescriptionButton.setVisibility(View.VISIBLE);
+                else
+                    clearDescriptionButton.setVisibility(View.GONE);
+            }
+        });
+        clearDescriptionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                descriptionEditText.setText("");
+            }
+        });
 
         startDateTV.setEnabled(true);
         startDateTV.setOnClickListener(new View.OnClickListener() {
@@ -477,23 +507,6 @@ public class DescriptionActivity extends AppCompatActivity {
         if (!endDateTV.getText().toString().isEmpty())
             clearEndDateButton.setVisibility(View.VISIBLE);
 
-        descriptionEditText.setEnabled(true);
-        descriptionEditText.setCursorVisible(true);
-        descriptionEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                setChanged(true);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-
         repeatSpinner.setEnabled(true);
         repeatSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -518,7 +531,6 @@ public class DescriptionActivity extends AppCompatActivity {
                     repeatDateLayout.setVisibility(View.GONE);
                     repeatDate = null;
                     repeatDateTV.setText("");
-                    repeatTimeTextView.setText("");
                 }
             }
 
@@ -538,17 +550,6 @@ public class DescriptionActivity extends AppCompatActivity {
                     showDatePicker(startDate, datepicker_type_repeat);
             }
         });
-        repeatTimeTextView.setEnabled(true);
-        repeatTimeTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (repeatDate != null)
-                    showTimePicker(repeatDate, datepicker_type_repeat);
-                else
-                    showTimePicker(startDate, datepicker_type_repeat);
-            }
-        });
-
         remindersLabel.setVisibility(View.VISIBLE);
         addReminderButton.setVisibility(View.VISIBLE);
         addReminderButton.setOnClickListener(new View.OnClickListener() {
@@ -571,6 +572,9 @@ public class DescriptionActivity extends AppCompatActivity {
         Calendar nextStartDate = Calendar.getInstance();
         nextStartDate.setTime(startDate.getTime());
         switch (type) {
+            case 0:
+                repeatUntilLayout.setVisibility(View.GONE);
+                break;
             case 1:
                 nextStartDate.add(Calendar.DAY_OF_MONTH, 1);
                 break;
@@ -669,15 +673,13 @@ public class DescriptionActivity extends AppCompatActivity {
                 repeatRules.clear();
                 realm.commitTransaction();
             }
-//            RealmResults<Reminder> reminders = realm.where(Reminder.class).equalTo("eventID", event.getEventID()).findAll();
-//            reminders.clear();
             for (ReminderView view : reminderViews) {
 
                 Reminder reminder = view.getReminder();
                 if (realm.where(Reminder.class).equalTo("reminderID", reminder.getReminderID()).findFirst() == null) {
                     long nextID = 1;
-                    if (realm.where(Event.class).max("eventID") != null)
-                        nextID += (long) realm.where(Event.class).max("eventID");
+                    if (realm.where(Reminder.class).max("reminderID") != null)
+                        nextID += (long) realm.where(Reminder.class).max("reminderID");
 
                     realm.beginTransaction();
                     reminder.setReminderID((int) nextID);
@@ -689,24 +691,34 @@ public class DescriptionActivity extends AppCompatActivity {
                 reminder.setEventID(event.getEventID());
                 realm.copyToRealmOrUpdate(reminder);
                 realm.commitTransaction();
-                Calendar c = Calendar.getInstance();
-                c.setTime(view.getDate().getTime());
-                c.set(Calendar.SECOND, 0);
-                c.set(Calendar.MILLISECOND, 0);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(view.getDate().getTime());
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
                 if (!isLocally)
-                    c.setTimeZone(TimeZone.getTimeZone(timezone));
+                    calendar.setTimeZone(TimeZone.getTimeZone(timezone));
 
                 Intent intent = new Intent();
-                intent.setAction("com.arcadia.wearapp.broadcast");
+                intent.setAction(getString(R.string.broadcast_action));
                 intent.putExtra("reminderId", reminder.getReminderID());
 
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(this, reminder.getReminderID(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
                 AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
                 alarmManager.cancel(pendingIntent);
-                if (repeatTimeMillis != 0)
-                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), repeatTimeMillis, pendingIntent);
-                else
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+                if (repeatTimeMillis != 0) {
+//                    if (repeatDate == null) {
+                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), repeatTimeMillis, pendingIntent);
+//                    } else {
+//                        long repeats;
+//                        repeats = (repeatDate.getTimeInMillis() - calendar.getTimeInMillis()) / repeatTimeMillis;
+//                        for (int i = 0; i < repeats; i++) {
+//                            calendar.add(Calendar.MILLISECOND, (int) repeatTimeMillis);
+//                            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+//                        }
+//                    }
+                } else {
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                }
             }
             realm.close();
 
@@ -726,14 +738,14 @@ public class DescriptionActivity extends AppCompatActivity {
 
     private boolean invalidateData() {
         if (nameEditText.getText().toString().isEmpty()) {
-            Toast.makeText(this, "Name value cannot be empty!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.toast_empty_name, Toast.LENGTH_SHORT).show();
             return false;
         } else if (startDateTV.getText().toString().isEmpty()) {
-            Toast.makeText(this, "Start Date cannot be empty!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.toast_empty_start_date, Toast.LENGTH_SHORT).show();
             return false;
         } else if (!endDateTV.getText().toString().isEmpty()) {
             if (endDate != null && endDate.before(startDate)) {
-                Toast.makeText(this, "End date cannot be before start date!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.toast_wrong_end_date, Toast.LENGTH_SHORT).show();
                 endDate = null;
                 endDateTV.setText("");
                 endTimeTV.setText("");
@@ -794,16 +806,16 @@ public class DescriptionActivity extends AppCompatActivity {
     private void showSaveDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true)
-                .setTitle("Save and exit")
-                .setMessage("Do you want save changes?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setTitle(getString(R.string.dialog_exit_title))
+                .setMessage(getString(R.string.dialog_exit_message))
+                .setPositiveButton(getString(R.string.dialog_positive_button), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (invalidateData())
                             saveAndExit();
                         NavUtils.navigateUpFromSameTask(DescriptionActivity.this);
                     }
-                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                }).setNegativeButton(getString(R.string.dialog_negative_button), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 setResult(RESULT_CANCELED);
@@ -811,7 +823,7 @@ public class DescriptionActivity extends AppCompatActivity {
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 NavUtils.navigateUpTo(DescriptionActivity.this, intent);
             }
-        }).setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+        }).setNeutralButton(getString(R.string.dialog_cancel_button), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
             }
@@ -823,9 +835,9 @@ public class DescriptionActivity extends AppCompatActivity {
     private void showRemoveDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true)
-                .setTitle("Remove event")
-                .setMessage("Are you sure want to remove this event?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setTitle(getString(R.string.dialog_remove_title))
+                .setMessage(getString(R.string.dialog_remove_message))
+                .setPositiveButton(getString(R.string.dialog_positive_button), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (invalidateData())
@@ -833,7 +845,7 @@ public class DescriptionActivity extends AppCompatActivity {
                         NavUtils.navigateUpFromSameTask(DescriptionActivity.this);
                     }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.dialog_negative_button), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                     }
@@ -854,9 +866,6 @@ public class DescriptionActivity extends AppCompatActivity {
                 break;
             case datepicker_type_end:
                 tpd = TimePickerDialog.newInstance(endTimeSetListener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), is24hFormat);
-                break;
-            case datepicker_type_repeat:
-                tpd = TimePickerDialog.newInstance(repeatTimeSetListener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), is24hFormat);
                 break;
         }
         if (tpd != null) {

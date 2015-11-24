@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.arcadia.wearapp.R;
 import com.arcadia.wearapp.realm_objects.Event;
 import com.arcadia.wearapp.realm_objects.Reminder;
 import com.arcadia.wearapp.realm_objects.RepeatRule;
@@ -23,7 +24,7 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
         RealmResults<Reminder> reminders = realm.allObjects(Reminder.class);
         for (Reminder reminder : reminders) {
             Intent startIntent = new Intent();
-            startIntent.setAction("com.arcadia.wearapp.broadcast");
+            startIntent.setAction(context.getString(R.string.broadcast_action));
             startIntent.putExtra("reminderId", reminder.getReminderID());
 
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, reminder.getReminderID(), startIntent, PendingIntent.FLAG_UPDATE_CURRENT);

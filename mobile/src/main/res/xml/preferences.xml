@@ -1,36 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="Timezone">
+    <PreferenceCategory android:title="@string/preference_category_timezone">
         <SwitchPreference
             android:defaultValue="true"
             android:key="locallyTimezone"
-            android:title="Use locally timezone" />
+            android:title="@string/preference_locally_timezone_title" />
         <ListPreference
             android:defaultValue="GMT+03:00"
             android:enabled="false"
-            android:entries="@array/timezoneArray"
-            android:entryValues="@array/timezoneArray"
+            android:entries="@array/timezoneNames"
+            android:entryValues="@array/timezoneValues"
             android:key="timezoneList"
-            android:summary="GMT+03:00"
-            android:title="Set timezone" />
+            android:summary="%s"
+            android:title="@string/preference_set_timezone_title" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Time Periods">
+    <PreferenceCategory android:title="@string/preference_category_periods">
         <SwitchPreference
             android:defaultValue="false"
             android:key="timePeriod"
-            android:summary="Set the time interval between start and the end of 1 hour"
-            android:title="Automatic interval" />
+            android:summary="@string/preference_periods_summary"
+            android:title="@string/preference_periods_title" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Versions">
+    <PreferenceCategory android:title="@string/preference_category_versions">
         <Preference
             android:key="appVersion"
-            android:title="App version" />
+            android:title="@string/preference_app_version_title" />
         <Preference
-            android:key="parseVersion"
-            android:title="Parse version" />
+            android:key="build"
+            android:title="@string/preference_build_title" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/preference_category_about">
         <Preference
-            android:key="realmVersion"
-            android:title="Realm Database version" />
+            android:key="arcadiaTitle"
+            android:title="@string/preference_company_title" />
+        <Preference
+            android:key="website"
+            android:title="@string/preference_website_title"/>
+        <Preference
+            android:key="email"
+            android:title="@string/preference_email_title"/>
+        <Preference
+            android:key="author"
+            android:title="@string/preference_author_title"
+            android:summary="@string/preference_author_summary"/>
     </PreferenceCategory>
 </PreferenceScreen>

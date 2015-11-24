@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.util.Log;
 
 import com.arcadia.wearapp.R;
 import com.arcadia.wearapp.activities.MainActivity;
@@ -24,30 +25,22 @@ import java.util.TimeZone;
 import io.realm.Realm;
 
 public class AlarmReceiver extends BroadcastReceiver {
-    private static final int minute = 60 * 1000;    //one minute in milliseconds
+//    private static final int minute = 60 * 1000;    //one minute in milliseconds
     private Context context;
     private SimpleDateFormat dateFormat;
-    //public class NotifyService extends IntentService {
-//
-//    // Name of an intent extra we can use to identify if this service was started to create a notification
-//    public static final String INTENT_NOTIFY = "com.atcadia.wearapp.INTENT_NOTIFY";
-//    // This is the object that receives interactions from clients
-//    private final IBinder mBinder = new ServiceBinder();
-//    // The system notification manager
-    private NotificationManagerCompat notificationManager;
-//}
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.d(this.toString(),"New event alarm receive");
         this.context = context;
         this.dateFormat = (SimpleDateFormat) SimpleDateFormat.getDateInstance(java.text.DateFormat.DEFAULT, Locale.getDefault());
         showNotification(intent.getIntExtra("reminderId", 0));
     }
 
     private void showNotification(int reminderId) {
-        boolean justInTime = true;
+//        boolean justInTime = true;
 
-        notificationManager = NotificationManagerCompat.from(context);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
         Realm realm = Realm.getInstance(context);
         Reminder reminder = realm.where(Reminder.class).equalTo("reminderID", reminderId).findFirst();
@@ -55,7 +48,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             Event event = realm.where(Event.class).equalTo("eventID", reminder.getEventID()).findFirst();
 
             if (event == null)
-                event = new Event("Unidentified event");
+                event = new Event(context.getString(R.string.event_null_name));
             Intent openIntent = new Intent(context, MainActivity.class);
             openIntent.setAction(MobileListenerService.Action_Open_Event);
             openIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK + Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -74,14 +67,14 @@ public class AlarmReceiver extends BroadcastReceiver {
                 Calendar calendar = Calendar.getInstance();
                 if (!isLocally)
                     calendar.setTimeZone(TimeZone.getTimeZone(timezone));
-                if ((event.getStartDate().getTime() + reminder.getAlertOffset() * 1000) < (calendar.getTimeInMillis() - minute)) {
-                    justInTime = false;
-                }
+//                if ((event.getStartDate().getTime() + reminder.getAlertOffset() * 1000) < (calendar.getTimeInMillis() - minute)) {
+//                    justInTime = false;
+//                }
             }
             if (event.getDescription() != null && event.getDescription().isEmpty())
                 contentText += String.format("\n%s", event.getDescription());
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
-                    .setSmallIcon(R.mipmap.ic_notification_small)
+                    .setSmallIcon(R.drawable.ic_notification_small)
                     .setContentTitle(event.getTitle())
                     .setContentText(contentText)
                     .setContentText(contentText)
@@ -92,7 +85,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                     .setContentIntent(viewPendingIntent);
             realm.close();
 
-            if (justInTime)
+//            if (justInTime)
                 // Send the notification to the system.
                 notificationManager.notify(reminderId, notificationBuilder.build());
         }

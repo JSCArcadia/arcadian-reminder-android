@@ -1,9 +1,12 @@
 package com.arcadia.wearapp.services;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.arcadia.wearapp.realm_objects.Event;
@@ -22,15 +25,20 @@ public class CalendarContentResolver {
     private static final String[] REMINDER_FIELDS = new String[]{"_id", "event_id", "minutes"};
 
     ContentResolver contentResolver;
+    Context context;
     Set<Event> events = new HashSet<>();
 
     public CalendarContentResolver(Context ctx) {
         this.contentResolver = ctx.getContentResolver();
+        this.context = ctx;
     }
 
     public Set<Event> getCalendarEvents() {
+        // Assume thisActivity is the current activity
+        int permissionCheck = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR);
+        if (permissionCheck == PackageManager.PERMISSION_DENIED)
+            return null;
         Cursor cursor = contentResolver.query(CALENDAR_EVENTS_URI, EVENT_FIELDS, null, null, null);
-
         try {
             if (cursor != null && cursor.getCount() > 0) {
                 while (cursor.moveToNext()) {
@@ -40,7 +48,7 @@ public class CalendarContentResolver {
                     String title = cursor.getString(1);
                     String description = cursor.getString(2);
                     Date startDate = new Date(cursor.getLong(4));
-                    Date endDate;
+
                     if (cursor.getString(6) != null) {
                         int curYear;
                         Calendar calendar = Calendar.getInstance();
@@ -52,10 +60,10 @@ public class CalendarContentResolver {
                         }
                     }
                     startDate.setTime(startDate.getTime());
-                    if ("0".endsWith(cursor.getString(3))) {
+
+                    Date endDate = null;
+                    if (cursor.getString(3).equals("0")) {
                         endDate = new Date(cursor.getLong(5));
-                    } else {
-                        endDate = new Date(startDate.getTime());
                     }
                     Log.d(this.toString(), " " + cursor.getString(6));
 

@@ -6,7 +6,7 @@ import android.app.Application;
 import java.util.ArrayList;
 
 public class WearApplication extends Application {
-    public ArrayList<Event> events;
+    public ArrayList<Event> events = new ArrayList<>();
     private Activity mCurrentActivity = null;
 
     @Override
@@ -21,5 +21,4 @@ public class WearApplication extends Application {
     public void setCurrentActivity(Activity mCurrentActivity) {
         this.mCurrentActivity = mCurrentActivity;
     }
-
 }

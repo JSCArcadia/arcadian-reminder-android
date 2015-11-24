@@ -7,4 +7,5 @@
     <dimen name="text_size_secondary_material">14sp</dimen>
     <dimen name="padding_horizontal">8dp</dimen>
     <dimen name="padding_vertical">8dp</dimen>
+    <dimen name="padding_item_vertical">4dp</dimen>
 </resources>

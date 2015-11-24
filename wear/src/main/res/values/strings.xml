@@ -1,8 +1,14 @@
 <resources>
-    <string name="app_name">WearApp</string>
-    <string name="title_activity_description">DescriptionActivity</string>
-    <string name="description_stub">This is Description</string>
-    <string name="intent_event_id_key">event_id</string>
-    <string name="open_button_text">Open on phone</string>
-    <string name="text_noting_show">nothing to show</string>
+    <string name="app_name">Scheduler</string>
+    <string name="title_activity_description">Event description</string>
+    <string name="intent_event_position_key">event_position</string>
+    <string name="open_button_text">Open on device</string>
+    <string name="text_please_wait">Please wait</string>
+    <string name="no_events_text">No Events</string>
+    <string name="intent_event_id">event_id</string>
+    <string name="today_period_text">Today</string>
+    <string name="week_period_text">Week</string>
+    <string name="month_period_text">Month</string>
+    <string name="year_period_text">Year</string>
+    <string name="no_connection_text">No connection to device</string>
 </resources>

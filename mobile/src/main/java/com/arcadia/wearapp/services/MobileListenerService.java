@@ -8,6 +8,7 @@ import android.util.Log;
 import com.arcadia.wearapp.R;
 import com.arcadia.wearapp.activities.MainActivity;
 import com.arcadia.wearapp.realm_objects.Event;
+import com.arcadia.wearapp.realm_objects.RepeatRule;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataApi;
@@ -28,6 +29,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
@@ -43,6 +48,8 @@ public class MobileListenerService extends WearableListenerService {
     public static final String Mobile_Send_List = "mobile_send_list";
     public static final String Action_Open_Event = "com.arcadia.wearapp.OPEN";
     private GoogleApiClient googleClient;
+    private SimpleDateFormat dateFormat;
+    private int period;
 
     public MobileListenerService() {
     }
@@ -71,10 +78,11 @@ public class MobileListenerService extends WearableListenerService {
                             Log.d(this.toString(), "onConnectionFailed: " + result);
                         }
                     })
-                    .addApi(Wearable.API)
+                    .addApiIfAvailable(Wearable.API)
                     .build();
             googleClient.connect();
         }
+        this.dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault());
     }
 
     @Override
@@ -123,7 +131,7 @@ public class MobileListenerService extends WearableListenerService {
                     }
                     break;
                 case Action_Sync:
-                    syncEventList();
+                    syncEventList(period);
                     break;
             }
         }
@@ -135,7 +143,9 @@ public class MobileListenerService extends WearableListenerService {
         switch (messageEvent.getPath()) {
             case Wear_Request_List:
                 Log.d(this.toString(), "Wear requesting list");
-                syncEventList();
+                if (messageEvent.getData() != null)
+                    this.period = (int) messageEvent.getData()[0];
+                syncEventList(period);
 
                 break;
             case Wear_Request_Open_Event:
@@ -154,7 +164,7 @@ public class MobileListenerService extends WearableListenerService {
         }
     }
 
-    private void syncEventList() {
+    private void syncEventList(int period) {
         Gson gson = new GsonBuilder()
                 .setExclusionStrategies(new ExclusionStrategy() {
                     @Override
@@ -170,30 +180,90 @@ public class MobileListenerService extends WearableListenerService {
                 .setDateFormat(DateFormat.DEFAULT, DateFormat.DEFAULT)
                 .create();
         JsonArray jsonArray = new JsonArray();
+
+        Calendar currentDay = Calendar.getInstance();
+        currentDay.set(Calendar.HOUR, 0);
+        currentDay.set(Calendar.SECOND, 0);
+        currentDay.set(Calendar.MILLISECOND, 0);
+
+        Calendar lastDate = Calendar.getInstance();
+        lastDate.set(Calendar.HOUR_OF_DAY, 23);
+        lastDate.set(Calendar.MINUTE, 59);
+        lastDate.set(Calendar.SECOND, 59);
+
+        switch (period) {
+            case 1:
+                lastDate.add(Calendar.WEEK_OF_YEAR, 1);
+                break;
+            case 2:
+                lastDate.add(Calendar.MONTH, 1);
+                break;
+            case 3:
+                lastDate.add(Calendar.YEAR, 1);
+                break;
+        }
+
         Realm realm = Realm.getInstance(this);
-        RealmResults<Event> results = realm.allObjects(Event.class);
+        RealmResults<Event> allObjects = realm.allObjectsSorted(Event.class, "startDate", true);
+        ArrayList<Event> results = new ArrayList<>();
+
+        for (Event event : allObjects) {
+            RepeatRule rule = realm.where(RepeatRule.class).equalTo("eventID", event.getEventID()).findFirst();
+            Calendar startDate = Calendar.getInstance();
+            startDate.setTime(event.getStartDate());
+            if (startDate.after(currentDay) && startDate.before(lastDate)) {
+                results.add(new Event(event.getEventID(), event.getTitle(), event.getStartDate(), event.getEndDate(), event.getDescription(), event.getGroupID()));
+            }
+            if (rule != null) {
+                Calendar eventEndDate = null;
+                if (event.getEndDate() != null) {
+                    eventEndDate = Calendar.getInstance();
+                    eventEndDate.setTime(event.getEndDate());
+                }
+
+                Calendar endRepeatDate = Calendar.getInstance();
+                endRepeatDate.setTime(rule.getEndRepeatDate() == null ? lastDate.getTime() : rule.getEndRepeatDate());
+                if (endRepeatDate.after(lastDate.getTime()))
+                    endRepeatDate.setTime(lastDate.getTime());
+
+                if (rule.getRepeatPeriod() != 0) {
+                    long repeats = (endRepeatDate.getTimeInMillis() - (startDate.before(currentDay) ? currentDay.getTimeInMillis() : startDate.getTimeInMillis())) / rule.getRepeatPeriod();    //endRepeatDate.get(Calendar.DAY_OF_YEAR) - startDate.get(Calendar.DAY_OF_YEAR);
+                    repeats = repeats < 0 ? 0 : repeats;
+                    for (int i = 0; i < repeats; i++) {
+                        startDate.add(Calendar.MILLISECOND, (int) rule.getRepeatPeriod());
+                        if (eventEndDate != null)
+                            eventEndDate.add(Calendar.MILLISECOND, (int) rule.getRepeatPeriod());
+                        if (startDate.after(lastDate))
+                            break;
+                        results.add(new Event(event.getEventID(), event.getTitle(), startDate.getTime(), eventEndDate == null ? null : eventEndDate.getTime(), event.getDescription(), event.getGroupID()));
+                    }
+                }
+            }
+        }
+
         if (!results.isEmpty()) {
             for (Event event : results) {
                 jsonArray.add(getJsonFromEvent(event));
             }
-            String jsonString = gson.toJson(jsonArray);
-            Intent listIntent = new Intent(this, MobileListenerService.class);
-            listIntent.putExtra(this.getString(R.string.intent_event_list_key), jsonString);
-            listIntent.setAction(MobileListenerService.Action_Send_List);
-            startService(listIntent);
         }
+
+        String jsonString = gson.toJson(jsonArray);
+        Intent listIntent = new Intent(this, MobileListenerService.class);
+        listIntent.putExtra(this.getString(R.string.intent_event_list_key), jsonString);
+        listIntent.setAction(MobileListenerService.Action_Send_List);
+        startService(listIntent);
     }
 
     private JsonElement getJsonFromEvent(Event event) {
         JsonObject json = new JsonObject();
         json.addProperty("event_id", event.getEventID());
         json.addProperty("title", event.getTitle());
-        json.addProperty("start_date", DateFormat.getDateTimeInstance().format(event.getStartDate()));
+        json.addProperty("start_date", dateFormat.format(event.getStartDate()));
         if (event.getEndDate() != null)
-            json.addProperty("end_date", DateFormat.getDateTimeInstance().format(event.getEndDate()));
-        if (event.getDescription() != null)
+            json.addProperty("end_date", dateFormat.format(event.getEndDate()));
+        if (event.getDescription() != null && !event.getDescription().isEmpty())
             json.addProperty("description", event.getDescription());
-        if (event.getGroupID() != null)
+        if (event.getGroupID() != null && !event.getGroupID().isEmpty())
             json.addProperty("group_id", event.getGroupID());
         return json;
     }

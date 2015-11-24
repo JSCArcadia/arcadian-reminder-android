@@ -1,22 +1,20 @@
 <resources>
-    <string name="app_name">Wear events notifier</string>
-    <string name="title_activity_description">Description</string>
+    <string name="app_name">Events scheduler</string>
+    <string name="title_activity_description">Event description</string>
     <string name="intent_event_id_key">event_id</string>
     <string name="intent_reminder_id_key">reminder_id</string>
     <string name="search_hint">Search</string>
-    <string name="select_date_hint">Select Date</string>
-    <string name="select_time_hint">Select Time</string>
+    <string name="select_date_hint">Date</string>
+    <string name="select_time_hint">Time</string>
     <string name="menu_save_button">Save</string>
     <string name="intent_event_position_key">position</string>
     <string name="intent_event_list_key">events_list_key</string>
     <string name="name_hint">Name</string>
     <string name="menu_edit_text">Edit Fields</string>
     <string name="reminders_label_text">Reminders</string>
-    <string name="datepicker_tag">Datepickerdialog</string>
-    <string name="timepicker_tag">Timepickerdialog</string>
+    <string name="datepicker_tag">datepickerdialog</string>
+    <string name="timepicker_tag">timepickerdialog</string>
     <string name="title_activity_settings">Settings</string>
-
-    <string name="hello_world">Hello world!</string>
     <string name="action_save">Save</string>
     <string name="title_activity_groups">Groups</string>
     <string name="group_title">GROUP_TITLE_TAG</string>
@@ -25,22 +23,246 @@
     <string name="menu_choose_groups">Choose groups</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_show_local">Local</string>
-    <string name="menu_show_all">All</string>
-    <string name="CALENDAR_GROUP_ID">from_calendar_group_id</string>
+    <string name="menu_show_all">All events</string>
+    <string name="calendar_group_id">from_calendar_group_id</string>
     <string name="menu_show_from_calendar">From Calendar</string>
-    <string name="repeat_rule_text">Repeat rule </string>
-    <string name="until_label_text">Until</string>
+    <string name="repeat_rule_text">Repeat rule</string>
     <string name="end_date_label_text">End</string>
     <string name="start_date_label_text">Start</string>
-    <string name="description_hint_text">Description</string>
-    <string name="no_groups_text">Nothing to show. Swipe to refresh</string>
-    <string name="nav_draver_label_text">WEAR EVENTS SCHEDULER</string>
+    <string name="description_hint_text">Note here</string>
+    <string name="no_groups_text">No groups found. Swipe to refresh</string>
+    <string name="all_groups_id">all_groups_group_id</string>
+    <string name="website">www.arcadia.spb.ru</string>
+    <string name="email">info@arcadia.spb.ru</string>
+    <string name="description_label">Description</string>
+    <string name="until_label">Until</string>
+    <string name="broadcast_action">com.arcadia.wearapp.broadcast</string>
+    <string name="toast_empty_name">The name cannot be empty</string>
+    <string name="toast_empty_start_date">Start Date cannot be empty</string>
+    <string name="toast_wrong_end_date">End date cannot be before start date</string>
+    <string name="dialog_exit_title">Save and exit</string>
+    <string name="dialog_exit_message">Do you want save changes?</string>
+    <string name="dialog_positive_button">Yes</string>
+    <string name="dialog_negative_button">No</string>
+    <string name="dialog_cancel_button">Cancel</string>
+    <string name="dialog_remove_title">Remove event</string>
+    <string name="dialog_remove_message">Are you sure want to remove this event?</string>
+    <string name="toast_internet_connection">Please, check your Internet connection and try again</string>
+    <string name="toast_calendar_permission_denied">Permission denied. Please grant the permission READ_CALENDAR</string>
+    <string name="toast_calendar_no_events">There are no events in the calendar</string>
+    <string name="toast_calendar_added">Successfully added %d events</string>
+    <string name="toast_calendar_no_new_events">Not found any new events</string>
+    <string name="toast_settings_app_not_found">The requested application is not found</string>
+    <string name="dialog_group_no_description">(No description)</string>
+    <string name="dialog_close_button">Close</string>
+    <string name="dialog_load_group_title">Loading</string>
+    <string name="dialog_load_group_message">Please wait</string>
+    <string name="event_null_name">Unidentified event</string>
+    <string name="parse_application_id">6pykGQdt4liKrk2ImWd0faAAjQL9RyXNeHftbiMh</string>
+    <string name="parse_client_key">g3VGjDURrtgwYTCzUNw0vhkwB2zgK3hNk5Pv8pXW</string>
+    <string name="preference_locally_timezone_title">Use locally timezone</string>
+    <string name="preference_category_timezone">Timezone</string>
+    <string name="preference_category_periods">Event duration</string>
+    <string name="preference_category_about">About company</string>
+    <string name="preference_category_versions">Versions</string>
+    <string name="preference_set_timezone_title">Set timezone</string>
+    <string name="preference_periods_summary">Set the time interval between start and the end of 1 hour</string>
+    <string name="preference_periods_title">Automatic interval</string>
+    <string name="preference_app_version_title">App version</string>
+    <string name="preference_build_title">Build</string>
+    <string name="preference_company_title">JSC \"Arcadia Inc.\"</string>
+    <string name="preference_website_title">Website</string>
+    <string name="preference_email_title">Email</string>
+    <string name="preference_author_title">Author</string>
+    <string name="preference_author_summary">Vitaliy Zhuravlev</string>
+    <string name="description_activity_new_event_title">Create new event</string>
 
     <string-array name="repeat_rules_array">
-        <item>not repeat</item>
-        <item>everyday</item>
-        <item>every week</item>
-        <item>every month</item>
-        <item>every year</item>
+        <item>Not repeat</item>
+        <item>Everyday</item>
+        <item>Every week</item>
+        <item>Every month</item>
+        <item>Every year</item>
+    </string-array>
+
+    <string-array name="repeat_until_array">
+        <item>Always</item>
+        <item>Ending</item>
+    </string-array>
+
+    <string-array name="reminder_types_array">
+        <item>At event time</item>
+        <item>5 minutes before</item>
+        <item>30 minutes before</item>
+        <item>1 hour before</item>
+        <item>Set custom time:</item>
+    </string-array>
+
+    <string-array name="timezoneValues">
+        <item>Pacific/Midway</item>
+        <item>Pacific/Honolulu</item>
+        <item>America/Anchorage</item>
+        <item>America/Los_Angeles</item>
+        <item>America/Tijuana</item>
+        <item>America/Phoenix</item>
+        <item>America/Chihuahua</item>
+        <item>America/Denver</item>
+        <item>America/Costa_Rica</item>
+        <item>America/Chicago</item>
+        <item>America/Mexico_City</item>
+        <item>America/Regina</item>
+        <item>America/Bogota</item>
+        <item>America/New_York</item>
+        <item>America/Caracas</item>
+        <item>America/Barbados</item>
+        <item>America/Halifax</item>
+        <item>America/Manaus</item>
+        <item>America/St_Johns</item>
+        <item>America/Santiago</item>
+        <item>America/Argentina/Buenos_Aires</item>
+        <item>America/Godthab</item>
+        <item>America/Montevideo</item>
+        <item>America/Sao_Paulo</item>
+        <item>Atlantic/South_Georgia</item>
+        <item>Atlantic/Azores</item>
+        <item>Atlantic/Cape_Verde</item>
+        <item>Africa/Casablanca</item>
+        <item>Europe/London</item>
+        <item>Europe/Amsterdam</item>
+        <item>Europe/Belgrade</item>
+        <item>Europe/Brussels</item>
+        <item>Europe/Sarajevo</item>
+        <item>Africa/Windhoek</item>
+        <item>Asia/Amman</item>
+        <item>Europe/Athens</item>
+        <item>Asia/Beirut</item>
+        <item>Africa/Cairo</item>
+        <item>Europe/Helsinki</item>
+        <item>Asia/Jerusalem</item>
+        <item>Africa/Harare</item>
+        <item>Europe/Minsk</item>
+        <item>Asia/Baghdad</item>
+        <item>Europe/Moscow</item>
+        <item>Asia/Kuwait</item>
+        <item>Africa/Nairobi</item>
+        <item>Asia/Tehran</item>
+        <item>Asia/Baku</item>
+        <item>Asia/Tbilisi</item>
+        <item>Asia/Yerevan</item>
+        <item>Asia/Dubai</item>
+        <item>Asia/Kabul</item>
+        <item>Asia/Karachi</item>
+        <item>Asia/Oral</item>
+        <item>Asia/Yekaterinburg</item>
+        <item>Asia/Calcutta</item>
+        <item>Asia/Colombo</item>
+        <item>Asia/Katmandu</item>
+        <item>Asia/Almaty</item>
+        <item>Asia/Rangoon</item>
+        <item>Asia/Krasnoyarsk</item>
+        <item>Asia/Bangkok</item>
+        <item>Asia/Shanghai</item>
+        <item>Asia/Hong_Kong</item>
+        <item>Asia/Irkutsk</item>
+        <item>Asia/Kuala_Lumpur</item>
+        <item>Australia/Perth</item>
+        <item>Asia/Taipei"</item>
+        <item>Asia/Seoul</item>
+        <item>Asia/Tokyo</item>
+        <item>Asia/Yakutsk</item>
+        <item>Australia/Darwin</item>
+        <item>Australia/Brisbane</item>
+        <item>Asia/Vladivostok</item>
+        <item>Pacific/Guam</item>
+        <item>Asia/Magadan</item>
+        <item>Australia/Hobart</item>
+        <item>Australia/Sydney</item>
+        <item>Pacific/Auckland</item>
+        <item>Pacific/Fiji</item>
+        <item>Pacific/Tongatapu</item>
+    </string-array>
+
+    <string-array name="timezoneNames">
+        <item>GMT-11:00 Midway Island</item>
+        <item>GMT-10:00 Hawaii</item>
+        <item>GMT-09:00 Alaska</item>
+        <item>GMT-08:00 Los Angeles</item>
+        <item>GMT-08:00 Tijuana</item>
+        <item>GMT-07:00 Arizona</item>
+        <item>GMT-07:00 Chihuahua</item>
+        <item>GMT-07:00 Denver</item>
+        <item>GMT-06:00 Costa Rica</item>
+        <item>GMT-06:00 Chicago</item>
+        <item>GMT-06:00 Mexico</item>
+        <item>GMT-06:00 Regina</item>
+        <item>GMT-05:00 Bogota</item>
+        <item>GMT-05:00 New York</item>
+        <item>GMT-04:30 Venezuela</item>
+        <item>GMT-04:00 Barbados</item>
+        <item>GMT-04:00 Canada</item>
+        <item>GMT-04:00 Manaus</item>
+        <item>GMT-03:30 Newfoundland</item>
+        <item>GMT-03:00 Santiago</item>
+        <item>GMT-03:00 Buenos Aires</item>
+        <item>GMT-03:00 Greenland</item>
+        <item>GMT-03:00 Montevideo</item>
+        <item>GMT-02:00 Brasilia</item>
+        <item>GMT-02:00 South Georgia</item>
+        <item>GMT-01:00 Azores</item>
+        <item>GMT-01:00 Cape Verde Islands</item>
+        <item>GMT+00:00 Casablanca</item>
+        <item>GMT+00:00 London, Dublin</item>
+        <item>GMT+01:00 Amsterdam, Berlin</item>
+        <item>GMT+01:00 Belgrade</item>
+        <item>GMT+01:00 Brussels</item>
+        <item>GMT+01:00 Sarajevo</item>
+        <item>GMT+02:00 Windhoek</item>
+        <item>GMT+02:00 Amman, Jordan</item>
+        <item>GMT+02:00 Athens, Istanbul</item>
+        <item>GMT+02:00 Beirut, Lebanon</item>
+        <item>GMT+02:00 Cairo</item>
+        <item>GMT+02:00 Helsinki</item>
+        <item>GMT+02:00 Jerusalem</item>
+        <item>GMT+02:00 Harare</item>
+        <item>GMT+03:00 Minsk</item>
+        <item>GMT+03:00 Baghdad</item>
+        <item>GMT+03:00 Moscow</item>
+        <item>GMT+03:00 Kuwait</item>
+        <item>GMT+03:00 Nairobi</item>
+        <item>GMT+03:00 Tehran</item>
+        <item>GMT+04:00 Baku</item>
+        <item>GMT+04:00 Tbilisi</item>
+        <item>GMT+04:00 Yerevan</item>
+        <item>GMT+04:00 Dubai</item>
+        <item>GMT+04:30 Kabul</item>
+        <item>GMT+05:00 Islamabad, Karachi</item>
+        <item>GMT+05:00 Uralsk</item>
+        <item>GMT+05:00 Yekaterinburg</item>
+        <item>GMT+05:30 Kolkata</item>
+        <item>GMT+05:30 Sri Lanka</item>
+        <item>GMT+05:45 Kathmandu</item>
+        <item>GMT+06:00 Astana</item>
+        <item>GMT+06:30 Rangoon</item>
+        <item>GMT+07:00 Krasnoyarsk</item>
+        <item>GMT+07:00 Bangkok</item>
+        <item>GMT+08:00 Beijing</item>
+        <item>GMT+08:00 Hong Kong</item>
+        <item>GMT+08:00 Irkutsk</item>
+        <item>GMT+08:00 Kuala Lumpur</item>
+        <item>GMT+08:00 Perth</item>
+        <item>GMT+08:00 Taipei</item>
+        <item>GMT+09:00 Seoul</item>
+        <item>GMT+09:00 Tokyo, Osaka</item>
+        <item>GMT+09:00 Yakutsk</item>
+        <item>GMT+09:30 Darwin</item>
+        <item>GMT+10:00 Brisbane</item>
+        <item>GMT+10:00 Vladivostok</item>
+        <item>GMT+10:00 Guam</item>
+        <item>GMT+10:00 Magadan</item>
+        <item>GMT+11:00 Hobart</item>
+        <item>GMT+11:00 Sydney, Canberra</item>
+        <item>GMT+13:00 Auckland</item>
+        <item>GMT+13:00 Fiji</item>
+        <item>GMT+13:30 Tongatapu</item>
     </string-array>
 </resources>

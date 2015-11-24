@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#2196F3</color>
+    <color name="primary_pressed">#1976D2</color>
+    <color name="ripple">#F06292</color>
+    <color name="accent">#E91E63</color>
+    <color name="accent_pressed">#C2185B</color>
+    <color name="primary_text_color">#de000000</color>
+
+    <color name="material_color_red_500">#e51c23</color>
+    <color name="material_color_pink_500">#e91e63</color>
+    <color name="material_color_purple_500">#9c27b0</color>
+    <color name="material_color_deep_purple_500">#673ab7</color>
+    <color name="material_color_indigo_500">#3f51b5</color>
+    <color name="material_color_blue_500">#5677fc</color>
+    <color name="material_color_light_blue_500">#03a9f4</color>
+    <color name="material_color_cyan_500">#00bcd4</color>
+    <color name="material_color_teal_500">#009688</color>
+    <color name="material_color_green_500">#259b24</color>
+    <color name="material_color_light_green_500">#8bc34a</color>
+    <color name="material_color_lime_500">#cddc39</color>
+    <color name="material_color_yellow_500">#ffeb3b</color>
+    <color name="material_color_amber_500">#ffc107</color>
+    <color name="material_color_orange_500">#ff9800</color>
+    <color name="material_color_deep_orange_500">#ff5722</color>
+    <color name="material_color_brown_500">#795548</color>
+    <color name="material_color_grey_500">#9e9e9e</color>
+    <color name="material_color_blue_grey_500">#607d8b</color>
+
+    <integer-array name="material_colors">
+        <item>@color/material_color_blue_500</item>
+        <item>@color/material_color_red_500</item>
+        <item>@color/material_color_green_500</item>
+        <item>@color/material_color_yellow_500</item>
+        <item>@color/material_color_purple_500</item>
+        <item>@color/material_color_pink_500</item>
+        <item>@color/material_color_light_green_500</item>
+        <item>@color/material_color_amber_500</item>
+        <item>@color/material_color_indigo_500</item>
+        <item>@color/material_color_deep_orange_500</item>
+        <item>@color/material_color_teal_500</item>
+        <item>@color/material_color_lime_500</item>
+        <item>@color/material_color_light_blue_500</item>
+        <item>@color/material_color_brown_500</item>
+        <item>@color/material_color_cyan_500</item>
+        <item>@color/material_color_orange_500</item>
+        <item>@color/material_color_blue_grey_500</item>
+        <item>@color/material_color_deep_purple_500</item>
+        <item>@color/material_color_grey_500</item>
+    </integer-array>
+
+</resources>

@@ -1,8 +1,13 @@
 package com.arcadia.wearapp.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -17,32 +22,39 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.arcadia.wearapp.DividerItemDecoration;
+import com.arcadia.wearapp.MobileApp;
 import com.arcadia.wearapp.R;
 import com.arcadia.wearapp.adapters.RecyclerViewAdapter;
 import com.arcadia.wearapp.realm_objects.Event;
-import com.arcadia.wearapp.realm_objects.ParseGroup;
 import com.arcadia.wearapp.realm_objects.Reminder;
+import com.arcadia.wearapp.realm_objects.RepeatRule;
 import com.arcadia.wearapp.services.CalendarContentResolver;
 import com.arcadia.wearapp.services.MobileListenerService;
+import com.arcadia.wearapp.views.DividerItemDecoration;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.rockerhieu.rvadapter.endless.EndlessRecyclerViewAdapter;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Set;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener, DrawerLayout.DrawerListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener, DrawerLayout.DrawerListener, EndlessRecyclerViewAdapter.RequestToLoadMoreListener {
 
     private static final int ADD_EVENT_REQUEST_CODE = 2;
     private static final int EDIT_EVENT_REQUEST_CODE = 1;
     private RecyclerViewAdapter adapter;
     private RecyclerView recyclerView;
     private ActionBar actionBar;
+    private EndlessRecyclerViewAdapter endlessAdapter;
+    private Calendar loadedDate = null;
     private DrawerLayout mDrawerLayout;
     private NavigationView navigationView;
     private View headView;
+    private boolean hasNextEvents;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +63,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_navigation);
             actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+        // Assume thisActivity is the current activity
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            // Should we show an explanation?
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CALENDAR)) {
+
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, MobileApp.MY_PERMISSIONS_REQUEST_READ_CALENDAR);
+            }
         }
 
         this.mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -65,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 menuItem.setChecked(true);
+                endlessAdapter.onDataReady(true);
                 Realm realm = Realm.getInstance(MainActivity.this);
                 switch (menuItem.getItemId()) {
                     case R.id.nav_settings:
@@ -72,29 +96,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         mDrawerLayout.closeDrawers();
                         startActivity(settingsIntent);
                         break;
-                    case R.id.parse_groups_download:
-                        Intent groupsIntent = new Intent(MainActivity.this, GroupsActivity.class);
-                        mDrawerLayout.closeDrawers();
-                        startActivity(groupsIntent);
                     case R.id.group_all:
-                        adapter.setGroupID(null);
+                        adapter.setGroupID(getString(R.string.all_groups_id));
+                        loadedDate = null;
+                        endlessAdapter.onDataReady(true);
+                        adapter.setDataSet(getNextEvents());
                         break;
                     case R.id.group_local:
-                        adapter.setGroupID("");
+                        adapter.setGroupID(null);
+                        loadedDate = null;
+                        endlessAdapter.onDataReady(true);
+                        adapter.setDataSet(getNextEvents());
                         break;
                     case R.id.group_from_calendar:
-                        adapter.setGroupID(getString(R.string.CALENDAR_GROUP_ID));
+                        adapter.setGroupID(getString(R.string.calendar_group_id));
+                        loadedDate = null;
+                        endlessAdapter.onDataReady(true);
+                        adapter.setDataSet(getNextEvents());
                         break;
                     case R.id.import_from_calendar:
                         int importCount = 0;
 
                         CalendarContentResolver resolver = new CalendarContentResolver(MainActivity.this);
                         Set<Event> events = resolver.getCalendarEvents();
-                        if (events.isEmpty()) {
-                            Toast.makeText(MainActivity.this, "You do not have events at the calendar", Toast.LENGTH_LONG).show();
+                        if (events == null) {
+                            Toast.makeText(MainActivity.this, R.string.toast_calendar_permission_denied, Toast.LENGTH_LONG).show();
+                        } else if (events.isEmpty()) {
+                            Toast.makeText(MainActivity.this, R.string.toast_calendar_no_events, Toast.LENGTH_LONG).show();
                         } else {
                             for (Event event : events) {
-                                event.setGroupID(getString(R.string.CALENDAR_GROUP_ID));
+                                event.setGroupID(getString(R.string.calendar_group_id));
 
                                 if (realm.where(Event.class).equalTo("title", event.getTitle()).equalTo("startDate", event.getStartDate()).equalTo("endDate", event.getEndDate()).count() == 0) {
 
@@ -135,16 +166,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             invalidateOptionsMenu();
 
                             if (importCount > 0) {
-                                Toast.makeText(MainActivity.this, String.format("Successfully added %d events", importCount), Toast.LENGTH_LONG).show();
-                                adapter.update();
+                                Toast.makeText(MainActivity.this, String.format(getString(R.string.toast_calendar_added), importCount), Toast.LENGTH_LONG).show();
+                                adapter.setDataSet(getNextEvents());
                             } else
-                                Toast.makeText(MainActivity.this, "Not found any new events", Toast.LENGTH_LONG).show();
+                                Toast.makeText(MainActivity.this, R.string.toast_calendar_no_new_events, Toast.LENGTH_LONG).show();
                         }
-                        break;
-                    default:
-                        ParseGroup group = realm.where(ParseGroup.class).equalTo("title", menuItem.getTitle().toString()).findFirst();
-                        if (group != null)
-                            adapter.setGroupID(group.getGroupID());
                         break;
                 }
                 realm.close();
@@ -161,24 +187,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
-        LinearLayoutManager manager = new LinearLayoutManager(this);
-
-        adapter = new RecyclerViewAdapter(this);
-        adapter.setOnClickListener(this);
-        adapter.setOnLongClickListener(this);
-
-        populateEvents();
-
-        adapter.update();
-
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setAdapter(adapter);
+        recyclerView.setHasFixedSize(true);
 
-        syncWithWear();
-
+        LinearLayoutManager manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        adapter = new RecyclerViewAdapter(this);
+        adapter.setDataSet(getNextEvents());
+        adapter.setOnClickListener(this);
+        adapter.setOnLongClickListener(this);
+
+        endlessAdapter = new EndlessRecyclerViewAdapter(this, adapter, this);
+        recyclerView.setAdapter(endlessAdapter);
 
         FloatingActionButton button = (FloatingActionButton) findViewById(R.id.floating_add_button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -207,57 +230,108 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         inflater.inflate(R.menu.drawer_view, navigationViewMenu);
 
         Realm realm = Realm.getInstance(this);
-        if (realm.where(Event.class).equalTo("groupID", getString(R.string.CALENDAR_GROUP_ID)).count() > 0) {
+        if (realm.where(Event.class).equalTo("groupID", getString(R.string.calendar_group_id)).count() > 0) {
             MenuItem item = navigationViewMenu.findItem(R.id.group_from_calendar).setVisible(true);
             if (item != null)
                 item.setVisible(true);
         }
-        RealmResults<ParseGroup> resultList = realm.allObjectsSorted(ParseGroup.class, "title", true);
-        if (!resultList.isEmpty()) {
-            for (int i = 0; i < resultList.size(); i++) {
-                ParseGroup group = resultList.get(i);
-                if (realm.where(Event.class).contains("groupID", group.getGroupID()).findFirst() != null)
-                    navigationViewMenu.add(R.id.menu_group_groups, 0, i + 3, group.getTitle());
-            }
-            navigationViewMenu.setGroupCheckable(R.id.menu_group_groups, true, true);
-        }
 
-//        if (realm.where(Event.class).equalTo("groupID", getString(R.string.CALENDAR_GROUP_ID)).count() > 0) {
-//            menu.add(R.id.menu_group_groups, 0, 3, "From Calendar");
-//            menu.setGroupCheckable(R.id.menu_group_groups, true, true);
-//        }
         realm.close();
-        if (adapter != null)
+        if (adapter != null) {
             adapter.update();
+        }
         return true;
     }
 
-    public void populateEvents() {
+    private List<Event> getNextEvents() {
+        List<Event> allEvents = new ArrayList<>();
         Realm realm = Realm.getInstance(this);
-        RealmResults<Event> results = realm.allObjects(Event.class);
+        for (int i = 0; i < 7; i++) {
+            if (loadedDate == null) {
+                loadedDate = Calendar.getInstance();
+                if (realm.where(Event.class).minimumDate("startDate") != null)
+                    loadedDate.setTime(realm.where(Event.class).minimumDate("startDate"));
+                loadedDate.set(Calendar.HOUR, 0);
+                loadedDate.set(Calendar.MINUTE, 0);
+                loadedDate.set(Calendar.SECOND, 0);
+                loadedDate.set(Calendar.MILLISECOND, 0);
+            } else
+                loadedDate.add(Calendar.DAY_OF_YEAR, 1);
 
-        if (results.isEmpty()) {
-            for (int i = 1; i < 8; i++) {
-                Event event = new Event(String.format("Item no. %d", i));
-                // increment index
-                long nextID = 1;
-                if (realm.where(Event.class).max("eventID") != null)
-                    nextID += (long) realm.where(Event.class).max("eventID");
+            RealmResults<Event> results = realm.allObjectsSorted(Event.class, "startDate", true);
+            if (results.isEmpty())
+                return allEvents;
+            for (Event event : results) {
+                if (!getString(R.string.all_groups_id).equals(adapter.getGroupID()) &&
+                        (adapter.getGroupID() == null && event.getGroupID() == null ||
+                                adapter.getGroupID() != null && !adapter.getGroupID().equals(event.getGroupID()))) {
+                    continue;
+                }
+                Calendar startDate = Calendar.getInstance();
+                startDate.setTime(event.getStartDate());
 
-                // insert new value
-                event.setEventID((int) nextID);
+                if (startDate.get(Calendar.DAY_OF_YEAR) == loadedDate.get(Calendar.DAY_OF_YEAR) && startDate.get(Calendar.YEAR) == loadedDate.get(Calendar.YEAR)) {
+                    Calendar endDate = null;
+                    if (event.getEndDate() != null) {
+                        endDate = Calendar.getInstance();
+                        endDate.setTime(event.getEndDate());
+                    }
 
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(Calendar.SECOND, 0);
-                calendar.add(Calendar.DAY_OF_YEAR, i - 1);
-                event.setStartDate(calendar.getTime());
+                    allEvents.add(new Event(event.getEventID(), event.getTitle(), startDate.getTime(), endDate == null ? null : endDate.getTime(), event.getDescription(), event.getGroupID()));
+                    if (endDate != null && startDate.get(Calendar.DAY_OF_YEAR) == endDate.get(Calendar.DAY_OF_YEAR)) {
+                        int days = endDate.get(Calendar.DAY_OF_YEAR) - startDate.get(Calendar.DAY_OF_YEAR);
+                        startDate.set(Calendar.HOUR_OF_DAY, 0);
+                        startDate.set(Calendar.MINUTE, 0);
+                        startDate.set(Calendar.SECOND, 0);
+                        for (int d = 0; d < days; d++) {
+                            startDate.add(Calendar.DAY_OF_YEAR, 1);
+                            allEvents.add(new Event(event.getEventID(), event.getTitle(), startDate.getTime(), endDate.getTime(), event.getDescription(), event.getGroupID()));
+                        }
+                    }
+                }
+            }
 
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(event);
-                realm.commitTransaction();
+            hasNextEvents = realm.where(Event.class).maximumDate("startDate") != null && realm.where(Event.class).maximumDate("startDate").after(loadedDate.getTime());
+
+            RealmResults<RepeatRule> repeatRules = realm.where(RepeatRule.class).findAll();
+            for (RepeatRule rule : repeatRules) {
+                Event event = realm.where(Event.class).equalTo("eventID", rule.getEventID()).findFirst();
+                if (rule.getEndRepeatDate() != null && rule.getEndRepeatDate().before(loadedDate.getTime()) || rule.getRepeatPeriod() == 0 ||
+                        !getString(R.string.all_groups_id).equals(adapter.getGroupID()) &&
+                                (adapter.getGroupID() == null && event.getGroupID() == null ||
+                                        adapter.getGroupID() != null && !adapter.getGroupID().equals(event.getGroupID()))) {
+                    continue;
+                }
+                hasNextEvents = true;
+
+                Calendar repeatStartDate = Calendar.getInstance();
+                repeatStartDate.setTime(event.getStartDate());
+                Calendar repeatEndDate = null;
+                if (event.getEndDate() != null) {
+                    repeatEndDate = Calendar.getInstance();
+                    repeatEndDate.setTime(event.getEndDate());
+                }
+                long repeats = 1000;
+                if (rule.getEndRepeatDate() != null)
+                    repeats = (rule.getEndRepeatDate().getTime() - event.getStartDate().getTime()) / rule.getRepeatPeriod();
+                for (int r = 0; r < repeats; r++) {
+                    repeatStartDate.add(Calendar.MILLISECOND, (int) rule.getRepeatPeriod());
+                    if (repeatEndDate != null)
+                        repeatEndDate.add(Calendar.MILLISECOND, (int) rule.getRepeatPeriod());
+                    if (repeatStartDate.get(Calendar.DAY_OF_YEAR) == loadedDate.get(Calendar.DAY_OF_YEAR) && repeatStartDate.get(Calendar.YEAR) == loadedDate.get(Calendar.YEAR)) {
+                        allEvents.add(new Event(event.getEventID(), event.getTitle(), repeatStartDate.getTime(), repeatEndDate == null ? null : repeatEndDate.getTime(), event.getDescription(), event.getGroupID()));
+                        break;
+                    }
+                    if (repeatStartDate.after(loadedDate))
+                        break;
+                }
+            }
+            if (!hasNextEvents) {
+                break;
             }
         }
         realm.close();
+        return allEvents;
     }
 
     @Override
@@ -299,21 +373,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case ADD_EVENT_REQUEST_CODE:
-                if (resultCode == RESULT_OK) {
-                    adapter.update();
-                }
-                break;
             case EDIT_EVENT_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
-                    adapter.update();
+                    loadedDate = null;
+                    endlessAdapter.onDataReady(true);
+                    adapter.setDataSet(getNextEvents());
                 }
+                break;
         }
-    }
-
-    private void syncWithWear() {
-        Intent listIntent = new Intent(MainActivity.this, MobileListenerService.class);
-        listIntent.setAction(MobileListenerService.Action_Sync);
-        startService(listIntent);
     }
 
     @Override
@@ -331,7 +398,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onLongClick(View v) {
         int position = recyclerView.getChildLayoutPosition(v);
         Event event = adapter.getItem(position);
-        if (event.getDescription() != null)
+        if (event.getDescription() != null && !event.getDescription().isEmpty())
             Toast.makeText(MainActivity.this, event.getDescription(), Toast.LENGTH_SHORT).show();
         return true;
     }
@@ -343,9 +410,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onDrawerOpened(View drawerView) {
         if (headView != null)
-//            updateStatus();
             if (actionBar != null) {
-                actionBar.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
+                actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_back);
                 actionBar.setDisplayHomeAsUpEnabled(true);
             }
     }
@@ -353,12 +419,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onDrawerClosed(View drawerView) {
         if (actionBar != null) {
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_navigation);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 
     @Override
     public void onDrawerStateChanged(int newState) {
+    }
+
+    @Override
+    public void onLoadMoreRequested() {
+        new AsyncTask<Void, Void, List<Event>>() {
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected List<Event> doInBackground(Void... params) {
+//                try {
+//                    Thread.sleep(500);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+                List<Event> events = new ArrayList<>();
+                while (hasNextEvents && events.isEmpty()) {
+                    events.addAll(getNextEvents());
+                }
+                return events;
+            }
+
+            @Override
+            protected void onPostExecute(List<Event> list) {
+                for (Event event : list) {
+                    adapter.addItem(event);
+                }
+                endlessAdapter.onDataReady(hasNextEvents);
+            }
+        }.execute();
     }
 }

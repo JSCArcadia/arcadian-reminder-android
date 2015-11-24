@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context="com.arcadia.wearapp.WearDescriptionActivity">
+    tools:context="com.arcadia.wearapp.activities.WearDescriptionActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -10,18 +10,22 @@
         android:orientation="vertical"
         android:padding="@dimen/activity_horizontal_margin">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/name_text"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:layout_weight="1"
                 android:background="@drawable/custom_edittext_drawable"
                 android:enabled="false"
                 android:hint="@string/name_hint"
+                android:maxLength="150"
+                android:maxLines="3"
                 android:textColor="@color/custom_text_color"
                 android:textSize="@dimen/abc_text_size_large_material" />
 
@@ -29,15 +33,55 @@
                 android:id="@+id/clear_name_text_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:background="@android:color/transparent"
-                android:paddingEnd="@dimen/abc_button_padding_horizontal_material"
-                android:paddingStart="@dimen/abc_button_padding_horizontal_material"
-                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:layout_gravity="bottom|right"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_delete"
                 android:visibility="gone"
                 tools:ignore="ContentDescription" />
-        </RelativeLayout>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/start_date_layout"
+            android:paddingTop="@dimen/abc_item_padding_material"
+            android:text="@string/description_label"
+            android:textColor="@color/abc_secondary_text_material_light"
+            android:textSize="@dimen/text_size_secondary_material" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/abc_control_padding_material"
+            android:paddingTop="@dimen/abc_control_padding_material">
+
+            <EditText
+                android:id="@+id/description_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/custom_edittext_drawable"
+                android:cursorVisible="false"
+                android:enabled="false"
+                android:hint="@string/description_hint_text"
+                android:maxLength="300"
+                android:maxLines="5"
+                android:textColor="@color/custom_text_color"
+                android:textSize="@dimen/text_size_secondary_material" />
+
+            <ImageButton
+                android:id="@+id/clear_description_text_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom|right"
+                android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_delete"
+                android:visibility="gone"
+                tools:ignore="ContentDescription" />
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
@@ -76,10 +120,12 @@
             <ImageButton
                 android:id="@+id/clear_start_date_button"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:padding="@dimen/abc_button_padding_horizontal_material"
-                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom|right"
+                android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_delete"
                 android:visibility="gone"
                 tools:ignore="ContentDescription" />
         </LinearLayout>
@@ -122,103 +168,78 @@
             <ImageButton
                 android:id="@+id/clear_end_date_button"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:padding="@dimen/abc_button_padding_horizontal_material"
-                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom|right"
+                android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_delete"
                 android:visibility="gone"
                 tools:ignore="ContentDescription" />
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/description_text"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/custom_edittext_drawable"
-            android:cursorVisible="false"
-            android:enabled="false"
-            android:hint="@string/description_hint_text"
-            android:textColor="@color/custom_text_color"
-            android:textSize="@dimen/text_size_primary_material" />
+            android:labelFor="@+id/repeat_spinner"
+            android:paddingTop="@dimen/abc_item_padding_material"
+            android:text="@string/repeat_rule_text"
+            android:textColor="@color/abc_secondary_text_material_light"
+            android:textSize="@dimen/text_size_secondary_material" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:labelFor="@+id/repeat_spinner"
-                android:paddingTop="@dimen/abc_item_padding_material"
-                android:text="@string/repeat_rule_text"
-                android:textColor="@color/abc_secondary_text_material_light"
-                android:textSize="@dimen/text_size_secondary_material" />
-
             <Spinner
-                style="@android:style/Widget.Holo.Light.Spinner"
                 android:id="@+id/repeat_spinner"
+                style="@android:style/Widget.Holo.Light.Spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:enabled="false" />
+
+            <LinearLayout
+                android:id="@+id/repeat_until_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <Spinner
+                    android:id="@+id/repeat_until_spinner"
+                    style="@android:style/Widget.Holo.Light.Spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="false" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/repeat_until_layout"
+            android:id="@+id/repeat_until_date_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:visibility="gone">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:labelFor="@+id/repeat_until_date_layout"
+                android:paddingTop="@dimen/abc_item_padding_material"
+                android:text="@string/until_label"
+                android:textColor="@color/abc_secondary_text_material_light"
+                android:textSize="@dimen/text_size_secondary_material" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:labelFor="@+id/repeat_until_spinner"
-                    android:paddingTop="@dimen/abc_item_padding_material"
-                    android:text="@string/until_label_text"
-                    android:textColor="@color/abc_secondary_text_material_light"
-                    android:textSize="@dimen/text_size_secondary_material" />
-
-                <Spinner
-                    style="@android:style/Widget.Holo.Light.Spinner"
-                    android:id="@+id/repeat_until_spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:enabled="false" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/repeat_until_date_layout"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/repeat_until_date"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <TextView
-                    android:id="@+id/repeat_until_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:background="@drawable/custom_spinner_drawable"
-                    android:enabled="false"
-                    android:hint="@string/select_date_hint"
-                    android:textColor="@color/custom_text_color" />
-
-                <TextView
-                    android:id="@+id/repeat_until_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:background="@drawable/custom_spinner_drawable"
-                    android:enabled="false"
-                    android:hint="@string/select_time_hint"
-                    android:textColor="@color/custom_text_color" />
-            </LinearLayout>
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/custom_spinner_drawable"
+                android:enabled="false"
+                android:hint="@string/select_date_hint"
+                android:textColor="@color/custom_text_color" />
         </LinearLayout>
 
         <LinearLayout
@@ -241,12 +262,12 @@
             <ImageButton
                 android:id="@+id/add_remind_button"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:background="@android:color/transparent"
-                android:padding="@dimen/abc_button_padding_horizontal_material"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom|right"
+                android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:src="@android:drawable/ic_menu_add"
+                android:src="@drawable/ic_add"
                 android:visibility="gone"
                 tools:ignore="ContentDescription" />
         </LinearLayout>

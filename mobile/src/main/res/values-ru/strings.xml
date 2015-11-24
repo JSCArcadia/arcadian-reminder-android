@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Планировщик событий</string>
+    <string name="title_activity_description">Описание события</string>
+    <string name="search_hint">Поиск</string>
+    <string name="select_date_hint">Дата</string>
+    <string name="select_time_hint">Время</string>
+    <string name="menu_save_button">Сохранить</string>
+    <string name="name_hint">Название</string>
+    <string name="menu_edit_text">Редактировать</string>
+    <string name="reminders_label_text">Напоминания</string>
+    <string name="title_activity_settings">Настройки</string>
+    <string name="action_save">Сохранить</string>
+    <string name="title_activity_groups">Группы</string>
+    <string name="menu_import_calendar">Импорт из календаря</string>
+    <string name="menu_choose_groups">Выбрать группы</string>
+    <string name="menu_settings">Настройки</string>
+    <string name="menu_show_local">На устройстве</string>
+    <string name="menu_show_all">Все события</string>
+    <string name="menu_show_from_calendar">Из календаря</string>
+    <string name="repeat_rule_text">Повторение</string>
+    <string name="start_date_label_text">Начало</string>
+    <string name="end_date_label_text">Конец</string>
+    <string name="description_hint_text">Оставьте примечание</string>
+    <string name="no_groups_text">Групп не найдено. Потяните для обновления</string>
+    <string name="description_label">Описание</string>
+    <string name="until_label">До</string>
+    <string name="toast_empty_name">Название не может быть пустым</string>
+    <string name="toast_empty_start_date">Дата начала не может быть пустой</string>
+    <string name="toast_wrong_end_date">Дата конца не может быть раньше даты начала</string>
+    <string name="dialog_exit_title">Сохранить и выйти</string>
+    <string name="dialog_exit_message">Вы хотите сохранить изменения?</string>
+    <string name="dialog_positive_button">Да</string>
+    <string name="dialog_negative_button">Нет</string>
+    <string name="dialog_cancel_button">Отмена</string>
+    <string name="dialog_remove_title">Удалить событие</string>
+    <string name="dialog_remove_message">Вы уверены, что хотите удалить это событие?</string>
+    <string name="toast_internet_connection">Пожалуйста, проверьте подключение к Интернету и повторите попытку</string>
+    <string name="toast_calendar_permission_denied">Нет доступа. Пожалуйста, предоставьте разрешение READ_CALENDAR</string>
+    <string name="toast_calendar_no_events">В календаре нет событий</string>
+    <string name="toast_calendar_added">Добавлено событий: %d</string>
+    <string name="toast_calendar_no_new_events">Не найдено новых событий</string>
+    <string name="toast_settings_app_not_found">Требуемое приложение не найдено</string>
+    <string name="dialog_group_no_description">(Без описания)</string>
+    <string name="dialog_close_button">Закрыть</string>
+    <string name="dialog_load_group_title">Загрузка</string>
+    <string name="dialog_load_group_message">Подождите</string>
+    <string name="event_null_name">Неопознанное событие</string>
+    <string name="preference_locally_timezone_title">Использовать местный часовой пояс</string>
+    <string name="preference_category_timezone">Часовой пояс</string>
+    <string name="preference_category_periods">Длительность события</string>
+    <string name="preference_category_about">О компании</string>
+    <string name="preference_category_versions">Версии</string>
+    <string name="preference_set_timezone_title">Задать часовой пояс</string>
+    <string name="preference_periods_summary">Установка временного интервала между началом и концом в 1 час</string>
+    <string name="preference_periods_title">Автоматический интервал</string>
+    <string name="preference_app_version_title">Версия приложения</string>
+    <string name="preference_build_title">Номер сборки</string>
+    <string name="preference_website_title">Веб-сайт</string>
+    <string name="preference_email_title">Электронная почта</string>
+    <string name="preference_author_title">Автор</string>
+    <string name="preference_author_summary">Виталий Журавлев</string>
+    <string name="description_activity_new_event_title">Создать новое событие</string>
+
+    <string-array name="repeat_rules_array">
+        <item>Не повторять</item>
+        <item>Каждый день</item>
+        <item>Каждую неделю</item>
+        <item>Каждый месяц</item>
+        <item>Каждый год</item>
+    </string-array>
+
+    <string-array name="repeat_until_array">
+        <item>Всегда</item>
+        <item>С окончанием</item>
+    </string-array>
+
+    <string-array name="reminder_types_array">
+        <item>Перед событием</item>
+        <item>За 5 минут</item>
+        <item>За 30 минут</item>
+        <item>За 1 час</item>
+        <item>Задать время</item>
+    </string-array>
+
+    <string-array name="timezoneNames">
+        <item>GMT-11:00 Мидуэй</item>
+        <item>GMT-10:00 Гавайи</item>
+        <item>GMT-09:00 Аляска</item>
+        <item>GMT-08:00 Лос-Анджелес</item>
+        <item>GMT-08:00 Тихуана</item>
+        <item>GMT-07:00 Аризона</item>
+        <item>GMT-07:00 Чиуауа</item>
+        <item>GMT-07:00 Денвер</item>
+        <item>GMT-06:00 Коста-Рика</item>
+        <item>GMT-06:00 Чикаго</item>
+        <item>GMT-06:00 Мехико</item>
+        <item>GMT-06:00 Реджайна</item>
+        <item>GMT-05:00 Богота</item>
+        <item>GMT-05:00 Нью Йорк</item>
+        <item>GMT-04:30 Венесуэла</item>
+        <item>GMT-04:00 Барбадос</item>
+        <item>GMT-04:00 Канада</item>
+        <item>GMT-04:00 Манаус</item>
+        <item>GMT-03:30 Ньюфаундленд</item>
+        <item>GMT-03:00 Сантьяго</item>
+        <item>GMT-03:00 Буэнос-Айрес</item>
+        <item>GMT-03:00 Гренландия</item>
+        <item>GMT-03:00 Монтефидео</item>
+        <item>GMT-02:00 Бразилия</item>
+        <item>GMT-02:00 Южная Георгия</item>
+        <item>GMT-01:00 Азорские о-ва</item>
+        <item>GMT-01:00 Острова зеленого мыса</item>
+        <item>GMT+00:00 Касабланка</item>
+        <item>GMT+00:00 Лондон, Дублин</item>
+        <item>GMT+01:00 Амстердам, Берлин</item>
+        <item>GMT+01:00 Белград</item>
+        <item>GMT+01:00 Брюссель</item>
+        <item>GMT+01:00 Сараево</item>
+        <item>GMT+02:00 Виндхук</item>
+        <item>GMT+02:00 Амман, Иордания</item>
+        <item>GMT+02:00 Афины, Стамбул</item>
+        <item>GMT+02:00 Бейрут, Ливан</item>
+        <item>GMT+02:00 Каир</item>
+        <item>GMT+02:00 Хельсинки</item>
+        <item>GMT+02:00 Иерусалим</item>
+        <item>GMT+02:00 Хараре</item>
+        <item>GMT+03:00 Минск</item>
+        <item>GMT+03:00 Багдад</item>
+        <item>GMT+03:00 Москва</item>
+        <item>GMT+03:00 Кувейт</item>
+        <item>GMT+03:00 Найроби</item>
+        <item>GMT+03:00 Тегеран</item>
+        <item>GMT+04:00 Баку</item>
+        <item>GMT+04:00 Тбилиси</item>
+        <item>GMT+04:00 Ереван</item>
+        <item>GMT+04:00 Дубай</item>
+        <item>GMT+04:30 Кабул</item>
+        <item>GMT+05:00 Исламабад, Карачи</item>
+        <item>GMT+05:00 Уральск</item>
+        <item>GMT+05:00 Екатеринбург</item>
+        <item>GMT+05:30 Калькутта</item>
+        <item>GMT+05:30 Шри-Ланка</item>
+        <item>GMT+05:45 Катманду</item>
+        <item>GMT+06:00 Астана</item>
+        <item>GMT+06:30 Рангун</item>
+        <item>GMT+07:00 Красноярск</item>
+        <item>GMT+07:00 Банкок</item>
+        <item>GMT+08:00 Джакарта</item>
+        <item>GMT+08:00 Гонконг</item>
+        <item>GMT+08:00 Иркутск</item>
+        <item>GMT+08:00 Куала-Лумпур</item>
+        <item>GMT+08:00 Перт</item>
+        <item>GMT+08:00 Тайбэй</item>
+        <item>GMT+09:00 Сеул</item>
+        <item>GMT+09:00 Токио, Осака</item>
+        <item>GMT+09:00 Якутск</item>
+        <item>GMT+09:30 Дарвин</item>
+        <item>GMT+10:00 Брисбен</item>
+        <item>GMT+10:00 Владивосток</item>
+        <item>GMT+10:00 Гуам</item>
+        <item>GMT+10:00 Магадан</item>
+        <item>GMT+11:00 Хобарт</item>
+        <item>GMT+11:00 Сидней, Канберра</item>
+        <item>GMT+13:00 Окленд</item>
+        <item>GMT+13:00 Фиджи</item>
+        <item>GMT+13:30 Тонгатапу</item>
+    </string-array>
+
+</resources>

@@ -1,6 +1,7 @@
 package com.arcadia.wearapp;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.wearable.view.CircledImageView;
 import android.support.wearable.view.WearableListView;
 import android.util.AttributeSet;
@@ -33,8 +34,9 @@ public class WearableListItemLayout extends LinearLayout
         mFadedTextAlpha = getResources()
                 .getInteger(R.integer.action_text_faded_alpha) / 100f;
         mNonFadedTextAlpha = 1f;
-        mFadedCircleColor = getResources().getColor(R.color.gray_material);
-        mChosenCircleColor = getResources().getColor(R.color.blue_material);
+
+        mFadedCircleColor = ContextCompat.getColor(context, R.color.gray_material);
+        mChosenCircleColor = ContextCompat.getColor(context, R.color.blue_material);
     }
 
     // Get references to the icon and text in the item layout definition

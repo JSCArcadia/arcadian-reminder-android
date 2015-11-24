@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.wearable.view.BoxInsetLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_box="all">
+
+        <RadioGroup
+            android:id="@+id/radio_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:background="@drawable/round_background_dark"
+            android:paddingBottom="@dimen/padding_item_vertical"
+            android:paddingLeft="@dimen/padding_horizontal"
+            android:paddingRight="@dimen/padding_horizontal"
+            android:paddingTop="@dimen/padding_item_vertical">
+
+            <RadioButton
+                android:id="@+id/today_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/today_period_text"
+                android:textColor="@color/primary_text_dark" />
+
+            <RadioButton
+                android:id="@+id/week_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/week_period_text"
+                android:textColor="@color/primary_text_dark" />
+
+            <RadioButton
+                android:id="@+id/month_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/month_period_text"
+                android:textColor="@color/primary_text_dark" />
+
+            <RadioButton
+                android:id="@+id/year_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/year_period_text"
+                android:textColor="@color/primary_text_dark" />
+        </RadioGroup>
+    </FrameLayout>
+</android.support.wearable.view.BoxInsetLayout>

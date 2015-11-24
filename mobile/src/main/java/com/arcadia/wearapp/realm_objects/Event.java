@@ -15,7 +15,7 @@ public class Event extends RealmObject {
     private String description;
     private String groupID;
 
-    public Event(int eventID, String title, Date startDate, Date endDate, String description, String groupID){
+    public Event(int eventID, String title, Date startDate, Date endDate, String description, String groupID) {
         this.eventID = eventID;
         this.title = title;
         this.startDate = startDate;
