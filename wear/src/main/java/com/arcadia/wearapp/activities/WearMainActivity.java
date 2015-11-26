@@ -23,16 +23,16 @@ public class WearMainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Intent intent = new Intent(this, WearListenerService.class);
+        intent.setAction(WearListenerService.Action_Request_List);
+        startService(intent);
+
         GridViewPager viewPager = (GridViewPager) findViewById(R.id.viewpager);
         pagerAdapter = new WearPagerAdapter(this);
         viewPager.setAdapter(pagerAdapter);
 
         DotsPageIndicator pageIndicator = (DotsPageIndicator) findViewById(R.id.page_indicator);
         pageIndicator.setPager(viewPager);
-
-        Intent intent = new Intent(this, WearListenerService.class);
-        intent.setAction(WearListenerService.Action_Request_List);
-        startService(intent);
 
         IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, messageFilter);
@@ -58,6 +58,10 @@ public class WearMainActivity extends Activity {
 
     public void redrawListView() {
         pagerAdapter.notifyDataSetChanged();
+
+        Intent notificationIntent = new Intent(this, WearListenerService.class);
+        notificationIntent.setAction(WearListenerService.Action_Update_Notification);
+        startService(notificationIntent);
     }
 
     public void setConnection(boolean isConnected) {

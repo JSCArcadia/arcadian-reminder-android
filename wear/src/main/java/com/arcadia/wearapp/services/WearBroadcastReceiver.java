@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.arcadia.wearapp.Event;
 import com.arcadia.wearapp.WearApplication;
@@ -26,8 +27,8 @@ public class WearBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Bundle bundle = intent.getExtras();
-
-        Activity activity = ((WearApplication) context).getCurrentActivity();
+        WearApplication wearApp = (WearApplication) context;
+        Activity activity = wearApp.getCurrentActivity();
         if (bundle.containsKey("type")) {
             String type = bundle.getString("type");
             if (type != null)
@@ -68,9 +69,9 @@ public class WearBroadcastReceiver extends BroadcastReceiver {
                         break;
                     case WearListenerService.Mobile_Check_Connection:
                         if (activity != null && activity.getClass().equals(WearMainActivity.class)) {
+                            Log.d("Device connected:", String.valueOf(intent.getBooleanExtra("is_connected", false)));
                             ((WearMainActivity) activity).setConnection(intent.getBooleanExtra("is_connected", false));
                         }
-
                         break;
                 }
         }

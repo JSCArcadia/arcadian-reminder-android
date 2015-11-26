@@ -698,25 +698,24 @@ public class DescriptionActivity extends AppCompatActivity {
                 if (!isLocally)
                     calendar.setTimeZone(TimeZone.getTimeZone(timezone));
 
+
                 Intent intent = new Intent();
                 intent.setAction(getString(R.string.broadcast_action));
                 intent.putExtra("reminderId", reminder.getReminderID());
 
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(this, reminder.getReminderID(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
                 AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-                alarmManager.cancel(pendingIntent);
                 if (repeatTimeMillis != 0) {
-//                    if (repeatDate == null) {
+                    if (repeatDate != null) {
+                        long repeats = (repeatDate.getTimeInMillis() - calendar.getTimeInMillis()) / repeatTimeMillis;
+                        for (int r = 1; r <= repeats; r++) {
+                            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, reminder.getReminderID() + r * 100000, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                        }
+                    }
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(this, reminder.getReminderID(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
                     alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), repeatTimeMillis, pendingIntent);
-//                    } else {
-//                        long repeats;
-//                        repeats = (repeatDate.getTimeInMillis() - calendar.getTimeInMillis()) / repeatTimeMillis;
-//                        for (int i = 0; i < repeats; i++) {
-//                            calendar.add(Calendar.MILLISECOND, (int) repeatTimeMillis);
-//                            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-//                        }
-//                    }
                 } else {
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(this, reminder.getReminderID(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
                     alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
                 }
             }

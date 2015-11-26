@@ -27,9 +27,6 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
             startIntent.setAction(context.getString(R.string.broadcast_action));
             startIntent.putExtra("reminderId", reminder.getReminderID());
 
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, reminder.getReminderID(), startIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            alarmManager.cancel(pendingIntent);
-
             Event event = realm.where(Event.class).equalTo("eventID", reminder.getEventID()).findFirst();
             if (event == null)
                 return;
@@ -37,11 +34,23 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
             Date remindDate = new Date(event.getStartDate().getTime() + reminder.getAlertOffset() * 1000);
 
             RepeatRule repeatRule = realm.where(RepeatRule.class).equalTo("eventID", reminder.getEventID()).findFirst();
-            if (repeatRule == null) {
-                alarmManager.set(AlarmManager.RTC_WAKEUP, remindDate.getTime(), pendingIntent);
-            } else {
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, remindDate.getTime(), repeatRule.getRepeatPeriod(), pendingIntent);
+            if (repeatRule != null) {
+                if (repeatRule.getRepeatPeriod() != 0) {
+                    if (repeatRule.getEndRepeatDate() != null) {
+                        long repeats = (repeatRule.getEndRepeatDate().getTime() - remindDate.getTime()) / repeatRule.getRepeatPeriod();
+                        for (int r = 1; r <= repeats; r++) {
+                            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, reminder.getReminderID() + r * 100000, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, remindDate.getTime(), pendingIntent);
+                        }
+                    }
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(context, reminder.getReminderID(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, remindDate.getTime(), repeatRule.getRepeatPeriod(), pendingIntent);
+                } else {
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(context, reminder.getReminderID(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, remindDate.getTime(), pendingIntent);
+                }
             }
         }
+        realm.close();
     }
 }

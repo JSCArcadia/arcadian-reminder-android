@@ -22,7 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.arcadia.wearapp.MobileApp;
 import com.arcadia.wearapp.R;
 import com.arcadia.wearapp.adapters.RecyclerViewAdapter;
 import com.arcadia.wearapp.realm_objects.Event;
@@ -46,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final int ADD_EVENT_REQUEST_CODE = 2;
     private static final int EDIT_EVENT_REQUEST_CODE = 1;
+    public static final int MY_PERMISSIONS_REQUEST_READ_CALENDAR = 3;
     private RecyclerViewAdapter adapter;
     private RecyclerView recyclerView;
     private ActionBar actionBar;
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CALENDAR)) {
 
                 // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, MobileApp.MY_PERMISSIONS_REQUEST_READ_CALENDAR);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR}, MY_PERMISSIONS_REQUEST_READ_CALENDAR);
             }
         }
 
@@ -262,30 +262,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (results.isEmpty())
                 return allEvents;
             for (Event event : results) {
-                if (!getString(R.string.all_groups_id).equals(adapter.getGroupID()) &&
-                        (adapter.getGroupID() == null && event.getGroupID() == null ||
-                                adapter.getGroupID() != null && !adapter.getGroupID().equals(event.getGroupID()))) {
-                    continue;
-                }
-                Calendar startDate = Calendar.getInstance();
-                startDate.setTime(event.getStartDate());
 
-                if (startDate.get(Calendar.DAY_OF_YEAR) == loadedDate.get(Calendar.DAY_OF_YEAR) && startDate.get(Calendar.YEAR) == loadedDate.get(Calendar.YEAR)) {
-                    Calendar endDate = null;
-                    if (event.getEndDate() != null) {
-                        endDate = Calendar.getInstance();
-                        endDate.setTime(event.getEndDate());
-                    }
+                if (getString(R.string.all_groups_id).equals(adapter.getGroupID()) ||
+                        (adapter.getGroupID() == null ? event.getGroupID() == null : adapter.getGroupID().equals(event.getGroupID()))) {
 
-                    allEvents.add(new Event(event.getEventID(), event.getTitle(), startDate.getTime(), endDate == null ? null : endDate.getTime(), event.getDescription(), event.getGroupID()));
-                    if (endDate != null && startDate.get(Calendar.DAY_OF_YEAR) == endDate.get(Calendar.DAY_OF_YEAR)) {
-                        int days = endDate.get(Calendar.DAY_OF_YEAR) - startDate.get(Calendar.DAY_OF_YEAR);
-                        startDate.set(Calendar.HOUR_OF_DAY, 0);
-                        startDate.set(Calendar.MINUTE, 0);
-                        startDate.set(Calendar.SECOND, 0);
-                        for (int d = 0; d < days; d++) {
-                            startDate.add(Calendar.DAY_OF_YEAR, 1);
-                            allEvents.add(new Event(event.getEventID(), event.getTitle(), startDate.getTime(), endDate.getTime(), event.getDescription(), event.getGroupID()));
+                    Calendar startDate = Calendar.getInstance();
+                    startDate.setTime(event.getStartDate());
+
+                    if (startDate.get(Calendar.DAY_OF_YEAR) == loadedDate.get(Calendar.DAY_OF_YEAR) && startDate.get(Calendar.YEAR) == loadedDate.get(Calendar.YEAR)) {
+                        Calendar endDate = null;
+                        if (event.getEndDate() != null) {
+                            endDate = Calendar.getInstance();
+                            endDate.setTime(event.getEndDate());
+                        }
+
+                        allEvents.add(new Event(event.getEventID(), event.getTitle(), startDate.getTime(), endDate == null ? null : endDate.getTime(), event.getDescription(), event.getGroupID()));
+                        if (endDate != null && startDate.get(Calendar.DAY_OF_YEAR) == endDate.get(Calendar.DAY_OF_YEAR)) {
+                            int days = endDate.get(Calendar.DAY_OF_YEAR) - startDate.get(Calendar.DAY_OF_YEAR);
+                            startDate.set(Calendar.HOUR_OF_DAY, 0);
+                            startDate.set(Calendar.MINUTE, 0);
+                            startDate.set(Calendar.SECOND, 0);
+                            for (int d = 0; d < days; d++) {
+                                startDate.add(Calendar.DAY_OF_YEAR, 1);
+                                allEvents.add(new Event(event.getEventID(), event.getTitle(), startDate.getTime(), endDate.getTime(), event.getDescription(), event.getGroupID()));
+                            }
                         }
                     }
                 }
@@ -296,34 +296,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             RealmResults<RepeatRule> repeatRules = realm.where(RepeatRule.class).findAll();
             for (RepeatRule rule : repeatRules) {
                 Event event = realm.where(Event.class).equalTo("eventID", rule.getEventID()).findFirst();
-                if (rule.getEndRepeatDate() != null && rule.getEndRepeatDate().before(loadedDate.getTime()) || rule.getRepeatPeriod() == 0 ||
-                        !getString(R.string.all_groups_id).equals(adapter.getGroupID()) &&
-                                (adapter.getGroupID() == null && event.getGroupID() == null ||
-                                        adapter.getGroupID() != null && !adapter.getGroupID().equals(event.getGroupID()))) {
-                    continue;
-                }
-                hasNextEvents = true;
+                if ((rule.getEndRepeatDate() == null || !rule.getEndRepeatDate().before(loadedDate.getTime()) && rule.getRepeatPeriod() != 0) &&
+                        (getString(R.string.all_groups_id).equals(adapter.getGroupID()) ||
+                                (adapter.getGroupID() == null ? event.getGroupID() == null : adapter.getGroupID().equals(event.getGroupID())))) {
+                    hasNextEvents = true;
 
-                Calendar repeatStartDate = Calendar.getInstance();
-                repeatStartDate.setTime(event.getStartDate());
-                Calendar repeatEndDate = null;
-                if (event.getEndDate() != null) {
-                    repeatEndDate = Calendar.getInstance();
-                    repeatEndDate.setTime(event.getEndDate());
-                }
-                long repeats = 1000;
-                if (rule.getEndRepeatDate() != null)
-                    repeats = (rule.getEndRepeatDate().getTime() - event.getStartDate().getTime()) / rule.getRepeatPeriod();
-                for (int r = 0; r < repeats; r++) {
-                    repeatStartDate.add(Calendar.MILLISECOND, (int) rule.getRepeatPeriod());
-                    if (repeatEndDate != null)
-                        repeatEndDate.add(Calendar.MILLISECOND, (int) rule.getRepeatPeriod());
-                    if (repeatStartDate.get(Calendar.DAY_OF_YEAR) == loadedDate.get(Calendar.DAY_OF_YEAR) && repeatStartDate.get(Calendar.YEAR) == loadedDate.get(Calendar.YEAR)) {
-                        allEvents.add(new Event(event.getEventID(), event.getTitle(), repeatStartDate.getTime(), repeatEndDate == null ? null : repeatEndDate.getTime(), event.getDescription(), event.getGroupID()));
-                        break;
+                    Calendar repeatStartDate = Calendar.getInstance();
+                    repeatStartDate.setTime(event.getStartDate());
+                    Calendar repeatEndDate = null;
+                    if (event.getEndDate() != null) {
+                        repeatEndDate = Calendar.getInstance();
+                        repeatEndDate.setTime(event.getEndDate());
                     }
-                    if (repeatStartDate.after(loadedDate))
-                        break;
+                    long repeats = 1000;
+                    if (rule.getEndRepeatDate() != null)
+                        repeats = (rule.getEndRepeatDate().getTime() - event.getStartDate().getTime()) / rule.getRepeatPeriod();
+                    for (int r = 0; r < repeats; r++) {
+                        repeatStartDate.add(Calendar.MILLISECOND, (int) rule.getRepeatPeriod());
+                        if (repeatEndDate != null)
+                            repeatEndDate.add(Calendar.MILLISECOND, (int) rule.getRepeatPeriod());
+                        if (repeatStartDate.get(Calendar.DAY_OF_YEAR) == loadedDate.get(Calendar.DAY_OF_YEAR) && repeatStartDate.get(Calendar.YEAR) == loadedDate.get(Calendar.YEAR)) {
+                            allEvents.add(new Event(event.getEventID(), event.getTitle(), repeatStartDate.getTime(), repeatEndDate == null ? null : repeatEndDate.getTime(), event.getDescription(), event.getGroupID()));
+                            break;
+                        }
+                        if (repeatStartDate.after(loadedDate))
+                            break;
+                    }
                 }
             }
             if (!hasNextEvents) {
@@ -439,11 +437,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             protected List<Event> doInBackground(Void... params) {
-//                try {
-//                    Thread.sleep(500);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
                 List<Event> events = new ArrayList<>();
                 while (hasNextEvents && events.isEmpty()) {
                     events.addAll(getNextEvents());

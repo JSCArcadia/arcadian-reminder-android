@@ -2,6 +2,8 @@ package com.arcadia.wearapp;
 
 import android.app.Activity;
 import android.app.Application;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 
 import java.util.ArrayList;
 

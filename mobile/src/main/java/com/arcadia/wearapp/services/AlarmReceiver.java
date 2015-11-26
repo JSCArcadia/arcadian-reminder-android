@@ -25,7 +25,6 @@ import java.util.TimeZone;
 import io.realm.Realm;
 
 public class AlarmReceiver extends BroadcastReceiver {
-//    private static final int minute = 60 * 1000;    //one minute in milliseconds
     private Context context;
     private SimpleDateFormat dateFormat;
 
@@ -38,7 +37,6 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     private void showNotification(int reminderId) {
-//        boolean justInTime = true;
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
@@ -59,24 +57,12 @@ public class AlarmReceiver extends BroadcastReceiver {
             String contentText = "";
             if (event.getStartDate() != null) {
                 contentText = dateFormat.format(event.getStartDate());
-
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-
-                boolean isLocally = preferences.getBoolean("locallyTimezone", true);
-                String timezone = preferences.getString("timezoneList", TimeZone.getDefault().getDisplayName());
-                Calendar calendar = Calendar.getInstance();
-                if (!isLocally)
-                    calendar.setTimeZone(TimeZone.getTimeZone(timezone));
-//                if ((event.getStartDate().getTime() + reminder.getAlertOffset() * 1000) < (calendar.getTimeInMillis() - minute)) {
-//                    justInTime = false;
-//                }
             }
             if (event.getDescription() != null && event.getDescription().isEmpty())
                 contentText += String.format("\n%s", event.getDescription());
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.ic_notification_small)
                     .setContentTitle(event.getTitle())
-                    .setContentText(contentText)
                     .setContentText(contentText)
                     .setAutoCancel(true)
                     .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
@@ -85,7 +71,6 @@ public class AlarmReceiver extends BroadcastReceiver {
                     .setContentIntent(viewPendingIntent);
             realm.close();
 
-//            if (justInTime)
                 // Send the notification to the system.
                 notificationManager.notify(reminderId, notificationBuilder.build());
         }

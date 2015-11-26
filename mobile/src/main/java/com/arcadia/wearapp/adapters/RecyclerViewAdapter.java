@@ -210,15 +210,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         update();
     }
 
-    public void deleteItem(int index) {
-        Realm realm = Realm.getInstance(context);
-        realm.beginTransaction();
-        dataSet.remove(index);
-        realm.commitTransaction();
-        realm.close();
-        update();
-    }
-
     public Event getItem(int position) {
         return getEvents().get(sectionedPositionToPosition(position));
     }
